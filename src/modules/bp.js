@@ -7,10 +7,22 @@ export const app = photoshop.app;
 export const fs = require("uxp").storage.localFileSystem;
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-
+window.PSCoreModal = PSCoreModal;
+window.PSBP = PSBP;
 
 async function DocID() {
   return app.activeDocument.id;
+}
+
+export function getMaxName(ntries) {
+  const files = ntries.filter(e => e.name.indexOf('psd') > 0);
+  const names = []
+  files.forEach(child => {
+    const name = parseInt(child.name.replace('.psd', ''));
+    if (!isNaN(name))
+      names.push(name);
+  })
+  return Math.max(...names);
 }
 
 export function findLayer(key) {
@@ -72,10 +84,10 @@ export function getLayers() {
           ],
           {}
         );
-        const textLayers = result[0].list.filter((llist) => {
-          return llist.name.includes("dcsmstext");
-        });
-        resolve(textLayers);
+        // const textLayers = result[0].list.filter((llist) => {
+        //   return llist.name.includes("dcsmstext");
+        // });
+        resolve(result[0].list);
       },
       { commandName: "list all layers" }
     );
@@ -231,47 +243,12 @@ export async function setText(templateid, texts) {
 
             moveLayer(top, -ntext.boundsNoEffects.left);
           });
-
-          // await PSBP([{
-          //     _obj: "set",
-          //     _target: [{ _ref: "layer", _id: _curid }],
-          //     to: { _obj: "layer", name: "dcsmstext_tamper" }
-          // }], {});
         }
 
         if (oldtext) {
           oldtext.delete();
         }
 
-        // for (const nt of newtexts) {
-        //     await PSBP([
-        //         {_obj: "set",_target: [{_ref: "layer",_id: nt.id,}],
-        //          to: {_obj: "textLayer",textKey: nt.text}}
-        //     ], {})
-        // await PSBP([
-        //     {_obj:"set",
-        //     _target:[
-        //         {
-        //             _ref:"property",
-        //             _property:"textStyle"
-        //         },
-        //         {
-        //             _ref: "textLayer",
-        //             _id: nt.id,
-        //         }
-        //     ],
-        //      to: {
-        //         _obj: "textStyle",
-        //         textOverrideFeatureName: 808465458,
-        //         typeStyleOperationType: 3,
-        //         size: {
-        //             _unit: "pointsUnit",
-        //             _value: 90
-        //         }
-        //     }}
-        // ], {})
-
-        // }
       } catch (error) {
         logme(error);
       }
@@ -345,6 +322,13 @@ export async function executeBPFile(interpreter, snippet) {
   });
 }
 
+
+export async function saveDocument(filename, channel) {
+  await PSCoreModal(async () => {
+
+  }, { commandName: "save document" })
+}
+
 export async function createNewDoc() {
   await runModalTasks(async () => {
     try {
@@ -411,7 +395,6 @@ export function getTagLayers() {
 
   return datas;
 }
-
 export function insertSmartObject(entryobject) {
   runModalTasks(async () => {
     try {
@@ -433,9 +416,7 @@ export function insertSmartObject(entryobject) {
     }
   });
 }
-
 export function getNewFileName(name, allnames) { }
-
 export async function setLayerName(name) {
   await runModalTasks(async () => {
     const result = await PSBP(
@@ -984,13 +965,72 @@ export async function showThumbnailTag(alltags, currenttag) {
   }, { commandName: "TagLayer" });
 }
 
+export async function doSaveDocument(savepathtoken, namafile, channel) {
 
+  return new Promise(async (resolve, reject) => {
+
+
+    const newJPG = await savepathtoken.createFile(namafile + ".jpeg", { overwrite: true });
+    const newPSD = await savepathtoken.createFile(namafile + ".psd", { overwrite: true });
+    const saveJPEG = await fs.createSessionToken(newJPG);
+    const savePSD = await fs.createSessionToken(newPSD);
+    await PSCoreModal(async () => {
+
+      const result = await PSBP([{
+        "_obj": "save",
+        "as": {
+          "_obj": "photoshop35Format",
+          "maximizeCompatibility": true
+        },
+        "in": {
+          "_path": savePSD,
+          "_kind": "local"
+        },
+        "documentID": app.activeDocument._id,
+        "lowerCase": true,
+        "saveStage": {
+          "_enum": "saveStageType",
+          "_value": "saveBegin"
+        }
+      }, {
+        "_obj": "save",
+        "as": {
+          "_obj": "JPEG",
+          "extendedQuality": 10,
+          "matteColor": {
+            "_enum": "matteColor",
+            "_value": "none"
+          }
+        },
+        "in": {
+          "_path": saveJPEG,
+          "_kind": "local"
+        },
+        "documentID": app.activeDocument._id,
+        "copy": true,
+        "lowerCase": true,
+        "saveStage": {
+          "_enum": "saveStageType",
+          "_value": "saveBegin"
+        }
+      }], {}).catch(e => logme("PS", e));
+      resolve(result[1].in._path)
+
+
+
+    }).catch(e => logme("CORE", e))
+  })
+}
 
 
 export async function bpSync(command, tagname) {
-  await PSCoreModal(async () => {
-    await PSBP([command], {}).catch(e => logme(e));
-  }, { commandName: tagname }).catch(e => logme(e))
+  return new Promise(async (resolve, reject) => {
+
+    await PSCoreModal(async () => {
+      const result = await PSBP([command], {}).catch(e => logme(e));
+      resolve(result);
+    }, { commandName: tagname }).catch(e => logme(e))
+  })
 }
 window.bpSync = bpSync;
 

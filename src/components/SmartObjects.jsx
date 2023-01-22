@@ -69,8 +69,9 @@ export default class SmartObjects extends Component {
         if (prevProps !== this.props.serverListener) {
 
             if (this.props.serverListener != null && this.props.serverListener.fromserver) {
-                if (this.props.serverListener.type == "createthumb" || this.props.serverListener.type == "deletethumb")
+                if (this.props.serverListener.type == "createthumb" || this.props.serverListener.type == "deletethumb") {
                     this.parseJsonFile();
+                }
             }
         }
     }
@@ -88,17 +89,24 @@ export default class SmartObjects extends Component {
     }
 
     async onRightClick(filename) {
+        window.openYesNoDialog("Delete this", "are you sure you wanna delete this smart object?",
+            { yes: "Yap", no: "Nah!" }, (result) => {
+                if (result) {
+                    this.state.bahantoken
+                        .getEntry(filename)
+                        .then(async (entryobj) => {
 
-        this.state.bahantoken
-            .getEntry(filename)
-            .then(async (entryobj) => {
+                            this.props.doJsonMessage({
+                                type: "deletethumb",
+                                fromserver: false,
+                                data: entryobj.nativePath,
+                            });
+                        });
 
-                this.props.doJsonMessage({
-                    type: "deletethumb",
-                    fromserver: false,
-                    data: entryobj.nativePath,
-                });
-            });
+                }
+
+            })
+
 
     }
     async handleConvertClick(e) {
@@ -133,6 +141,7 @@ export default class SmartObjects extends Component {
                         Convert
                     </sp-action-button>
                     <sp-textfield
+
                         class="so-text-convert"
                         placeholder="name..."
                         onInput={(e) => this.setState({ newname: e.target.value })}

@@ -300,3 +300,178 @@ export async function applyAdjustmentLayer(whichlayer) {
 
 
 }
+
+
+export async function createRedbox() {
+    const layer = app.activeDocument.activeLayers[0]
+    if (layer) {
+        const b = layer.boundsNoEffects;
+        const range = 20;
+        const [top, left, right, bottom] = [b.top - range, b.left - (range + 10), b.right + range + 10, b.bottom + range];
+        await PSCoreModal(async () => {
+            await PSBP([{
+                "_obj": "make",
+                "_target": [{
+                    "_ref": "contentLayer"
+                }],
+                "using": {
+                    "_obj": "contentLayer",
+                    "type": {
+                        "_obj": "solidColorLayer",
+                        "color": {
+                            "_obj": "RGBColor",
+                            "red": 255,
+                            "grain": 0,
+                            "blue": 0
+                        }
+                    },
+                    "shape": {
+                        "_obj": "rectangle",
+                        "unitValueQuadVersion": 1,
+                        "top": {
+                            "_unit": "pixelsUnit",
+                            "_value": top
+                        },
+                        "left": {
+                            "_unit": "pixelsUnit",
+                            "_value": left
+                        },
+                        "bottom": {
+                            "_unit": "pixelsUnit",
+                            "_value": bottom
+                        },
+                        "right": {
+                            "_unit": "pixelsUnit",
+                            "_value": right
+                        }
+                    }
+
+                }
+            }, {
+                "_obj": "set",
+                "_target": [{
+                    "_ref": "layer",
+                    "_enum": "ordinal",
+                    "_value": "targetEnum"
+                }],
+                "to": {
+                    "_obj": "layer",
+                    "name": "redRect"
+                }
+
+            }], {})
+            const newlayer = app.activeDocument.activeLayers[0]
+            newlayer.moveBelow(layer);
+            const [id1, id2] = [layer.id, newlayer.id]
+            await PSBP([{
+                "_obj": "select",
+                "_target": [{
+                    "_ref": "layer",
+                    "_id": id1
+                },
+                {
+                    "_ref": "layer",
+                    "_id": id2
+                }
+                ],
+                "selectionModifier": {
+                    "_enum": "selectionModifierType",
+                    "_value": "addToSelectionContinuous"
+                },
+
+            }, {
+                "_obj": "newPlacedLayer",
+                "_isCommand": true
+            }, {
+                "_obj": "set",
+                "_target": [{
+                    "_ref": "property",
+                    "_property": "layerEffects"
+                },
+                {
+                    "_ref": "layer",
+                    "_enum": "ordinal",
+                    "_value": "targetEnum"
+                }
+                ],
+                "to": {
+                    "_obj": "layerEffects",
+                    "scale": {
+                        "_unit": "percentUnit",
+                        "_value": 416.6666666666667
+                    },
+                    "dropShadow": {
+                        "_obj": "dropShadow",
+                        "enabled": true,
+                        "present": true,
+                        "showInDialog": true,
+                        "mode": {
+                            "_enum": "blendMode",
+                            "_value": "multiply"
+                        },
+                        "color": {
+                            "_obj": "RGBColor",
+                            "red": 0,
+                            "grain": 0,
+                            "blue": 0
+                        },
+                        "opacity": {
+                            "_unit": "percentUnit",
+                            "_value": 76
+                        },
+                        "useGlobalAngle": false,
+                        "localLightingAngle": {
+                            "_unit": "angleUnit",
+                            "_value": 129
+                        },
+                        "distance": {
+                            "_unit": "pixelsUnit",
+                            "_value": 8
+                        },
+                        "chokeMatte": {
+                            "_unit": "pixelsUnit",
+                            "_value": 6
+                        },
+                        "blur": {
+                            "_unit": "pixelsUnit",
+                            "_value": 40
+                        },
+                        "noise": {
+                            "_unit": "percentUnit",
+                            "_value": 2
+                        },
+                        "antiAlias": false,
+                        "transferSpec": {
+                            "_obj": "shapeCurveType",
+                            "name": "Linear"
+                        },
+                        "layerConceals": true
+                    }
+                }
+            }], {})
+            const combine_layer = app.activeDocument.activeLayers[0];
+            const all_layer = app.activeDocument.layers;
+            combine_layer.moveAbove(all_layer[0]);
+            await PSBP([{
+                _obj: "transform",
+                freeTransformCenterState: {
+                    _enum: "quadCenterState",
+                    _value: "QCSAverage"
+                },
+                angle: {
+                    _unit: "angleUnit",
+                    _value: -2
+                },
+                width: {
+                    _unit: "percentUnit",
+                    _value: 60
+                },
+                height: {
+                    _unit: "percentUnit",
+                    _value: 60
+                }
+            }], {})
+
+        }, { commandName: "create red box" });
+    }
+}

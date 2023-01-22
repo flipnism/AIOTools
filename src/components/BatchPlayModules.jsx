@@ -73,7 +73,7 @@ const BatchPlayModules = (props) => {
         <div ref={elRef} {...rest} className="sidebar">
             <div className="sidebar-btn-group">
 
-                {bpfile.files.map((f, i) => { return <sp-action-button size="s" key={i} onClick={() => onBPClick(f)}>{f.name.replace(/\.[^/.]+$/, "").toUpperCase()}</sp-action-button> })}
+                {bpfile.files.map((f, i) => { return <div className="bp-button" key={i} onClick={() => onBPClick(f)}>{f.name.replace(/\.[^/.]+$/, "").toUpperCase()}</div> })}
 
             </div>
         </div>

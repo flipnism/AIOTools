@@ -1,4 +1,22 @@
 $mainColor: #fd0
+$font-main: 'Montserrat'
+$font-alt: 'Bebas Neue Pro'
+*
+    > sp-label,
+    > sp-menu-item,
+    > sp-textarea,
+    > sp-textfield,
+    > textarea,
+    > .input,
+    > input,
+    > span
+        font-size: 10px
+        font-family: $font-main
+        font-weight: 500
+    > sp-picker,
+    > sp-menu
+        font-size: 12px
+        font-weight: 900
 
 .maintab
     margin: 2px
@@ -24,10 +42,11 @@ $mainColor: #fd0
 .btn-group
     & > .btn
         cursor: pointer
-        width: 70px
         height: 25px
-        font-size: .6rem
-        font-family: 'Bebas Neue Pro'
+        font-size: .9rem
+        font-family: $font-alt
+        font-weight: 400
+        text-transform: uppercase
 
 .btn-icon
     width: 30px
@@ -72,7 +91,6 @@ $mainColor: #fd0
     content: '[style] '
 
 .sidebar
-    padding: 10px
     display: flex
     background: transparent
     width: 100%
@@ -80,15 +98,12 @@ $mainColor: #fd0
     overflow: hidden
 
 .sidebar-btn-group
-    padding-left: 10px
     display: flex
     flex-direction: row
     flex-wrap: wrap
     width: 100%
-
-    & > *
-        flex-grow: 1
-        font-size: 0.6rem
+    justify-content: center
+    margin-top: 10px
 
 .batchplay-panel
     display: flex
@@ -99,6 +114,18 @@ $mainColor: #fd0
     border-radius: 8px
     overflow: auto
     background: #222
+
+.bp-button
+    cursor: pointer
+    font-family: $font-alt
+    font-weight: 400
+    padding: 0px 5px
+    font-size: 0.9rem
+    margin: 0px 2px
+    color: #fff
+    &:hover
+        background: #fd0
+        color: #222
 
 .tab-menu
     overflow: hidden
@@ -113,7 +140,6 @@ $mainColor: #fd0
     align-content: center
     align-items: flex-start
     flex-wrap: wrap
-    padding: 10px
 
 .tab-trigger
     width: 30px
@@ -157,7 +183,7 @@ $mainColor: #fd0
     position: absolute
     overflow: none
     font-weight: 900
-    font-family: Montserrat
+    font-family: $font-main
     font-size: 8em
     text-align: center
     color: rgba(255,255,255,.03)
@@ -176,7 +202,7 @@ $mainColor: #fd0
     align-items: baseline
     top: 0
     > .loading-text
-        font-family: Montserrat
+        font-family: $font-main
         font-size: 1.6em
         font-weight: 900
 
@@ -189,14 +215,14 @@ $mainColor: #fd0
     justify-content: space-between
     cursor: pointer
     color: #444
-    font-family: "Montserrat"
+    font-family: $font-main
     font-size: 2em
     font-weight: 900
     height: 18px
     overflow: hidden
     margin-top: 10px
     &:hover
-        background-color: #333333
+        background-color: #222
         color: #fd0
         padding-left: 10px
 .accordion-content
@@ -217,12 +243,12 @@ $mainColor: #fd0
     > form > sp-heading
         margin: 2px 1px 5px
         padding: 0px
-        font-family: Montserrat
+        font-family: $font-main
         font-weight: 900
     > form > sp-body
         padding: 10px
         display: flex
-        font-family: Montserrat
+        font-family: $font-main
         font-size: 0.8rem
         text-align: justify
 
@@ -237,7 +263,7 @@ $mainColor: #fd0
     > input
         font-size: 2rem
 .btn-importcolor
-    font-family: Montserrat
+    font-family: $font-main
     font-weight: 900
     width: 100%
 
@@ -268,7 +294,7 @@ $mainColor: #fd0
     justify-content: flex-end
     align-items: center
     font-size: .7rem
-    font-family: Montserrat
+    font-family: $font-main
 .preview-box
     display: flex
     text-align: center
@@ -291,7 +317,7 @@ $mainColor: #fd0
         height: 100px
         margin: 10px
         border-radius: 100px
-        font-family: Montserrat
+        font-family: $font-main
         font-size: 30px
         font-weight: 900
         text-align: center
@@ -318,6 +344,7 @@ $mainColor: #fd0
     margin: 0
     padding: 1px 1px 1px 3px
     flex: 1
+    border-bottom: solid 1px #333
 
 .span-tag
     font-size: 0.6rem

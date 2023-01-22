@@ -9,6 +9,7 @@ import {
     logme
 } from "../modules/bp";
 import { WC } from "../components/WC";
+import ColorSort from "../utils/colorsort"
 import { MultiSlider } from "./MultiSlider";
 import { MCB } from "./MCB";
 const colpattern = /(?:[0-9a-fA-F]{3}){1,2}/gm;
@@ -30,11 +31,14 @@ export default class ColorTool extends Component {
         this.onSliderChange = this.onSliderChange.bind(this);
         this.fetchFillLayer = this.fetchFillLayer.bind(this);
         this.psEventNotifier = this.psEventNotifier.bind(this);
+        this.getColors = this.getColors.bind(this);
 
         this.lockRef = React.createRef();
         this.textRef = React.createRef();
+        this.colorsort = new ColorSort();
+
         this.state = {
-            colors: JSON.parse(localStorage.getItem(COLOR)),
+            colors: this.getColors(),
             color_top: localStorage.getItem(MODE.COLORTOP),
             color_mid: localStorage.getItem(MODE.COLORMID),
             color_bottom: localStorage.getItem(MODE.COLORBOTTOM),
@@ -47,7 +51,13 @@ export default class ColorTool extends Component {
             showguide: false
         };
     }
-
+    getColors() {
+        const cols = JSON.parse(localStorage.getItem(COLOR));
+        if (!cols)
+            return [];
+        const color = this.colorsort.sort(cols);
+        return color;
+    }
     onSliderChange(e) {
         logme("onsliderChange");
         this.setState({ slider_value: e.target.value });
@@ -158,9 +168,12 @@ export default class ColorTool extends Component {
             });
         }
     }
-
+    componentDidUpdate(prevProps, prevState) {
+    }
     componentDidMount() {
         photoshop.action.addNotificationListener(this.events, this.psEventNotifier);
+
+
     }
 
     componentWillUnmount() {
@@ -215,7 +228,7 @@ export default class ColorTool extends Component {
 
                             <MCB onChange={(e) => {
                                 this.setState({ lockslider: e.target.checked ? 1 : 0 });
-                            }} value="show slider" />
+                            }} value="lock slider" />
 
                         </div>
                         <MultiSlider

@@ -1,11 +1,12 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { logme } from "../modules/bp";
+import { TextArea } from "./TextArea";
 
 
 export const TextTool = forwardRef(({ BindOnClick }, ref) => {
     const [textareaValue, setTextareaValue] = useState("hello world\rlorem fuck all that")
     const [tagMode, setTagMode] = useState([]);
-    const mainbtn = ["Create", "Explode", "BoxMe", "TAG"];
+    const mainbtn = ["CREATE", "BOX ME", "TAG"];
     const [hideText, setHideText] = useState(true);
     const [allTexts, setAllTexts] = useState([]);
     const txtRef = useRef(null);

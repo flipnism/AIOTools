@@ -26,8 +26,8 @@ export const ContextMenu = forwardRef(({ onMenuClicked, onSecondMenuClicked, ...
     return (
         <><div className="ghost-panel"
             onClick={(e) => {
-
                 setShowMe(false);
+                onMenuClicked(null)
             }}
             style={{ display: showMe ? "block" : "none" }}
         >

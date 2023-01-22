@@ -16,6 +16,7 @@ export const OnlineImages = (props) => {
     const [keyword, setKeyword] = useState("");
     const [downloadedFolder, setDownloadedFolder] = useState(null);
     const [fileData, setFileData] = useState();
+    const [disable, setDisable] = useState(false);
     function doFetch() {
         doLoad(true);
         fetch(stockurl(keyword, currentpage))
@@ -34,6 +35,7 @@ export const OnlineImages = (props) => {
 
     }
     function doLoad(isload) {
+        setDisable(isload);
         setLoading(isload);
     }
     function handleOnKeydown(e) {
@@ -113,10 +115,17 @@ export const OnlineImages = (props) => {
             <div className="group-horizontal" style={{ marginBottom: "15px" }}>
 
 
-                <sp-textfield
+                {disable ? <><sp-textfield
+                    disabled
                     onKeyDown={handleOnKeydown}
                     type="search" size="s" class="search"></sp-textfield>
-                <sp-action-button size="s" onClick={handleNextPage}>{'>'}</sp-action-button>
+                    <sp-action-button size="s" disabled onClick={handleNextPage}>{'>'}</sp-action-button>
+                </> :
+                    <>
+                        <sp-textfield
+                            onKeyDown={handleOnKeydown}
+                            type="search" size="s" class="search"></sp-textfield> <sp-action-button size="s" onClick={handleNextPage}>{'>'}</sp-action-button></>}
+
             </div>
             <div className="group-vertical" style={{ height: "400px" }}>
 

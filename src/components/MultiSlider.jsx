@@ -11,6 +11,7 @@ export const MultiSlider = (props) => {
   const [first, setFirst] = useState(true);
   const [isLock, setIsLock] = useState(false);
   const [ranges, setRanges] = useState(0);
+  const [initrange, setInitRage] = useState(100);
   const kiri = useRef();
   const kanan = useRef();
 
@@ -58,9 +59,8 @@ export const MultiSlider = (props) => {
             <sp-slider
               ref={kiri}
               data-id="msleft"
-              value="0"
               min="0"
-              max="100"
+              max={initrange}
             />
           </WC>
           {
@@ -74,9 +74,8 @@ export const MultiSlider = (props) => {
               <sp-slider
                 ref={kanan}
                 data-id="msright"
-                value="25"
                 min="0"
-                max="100"
+                max={initrange}
               />
             </WC>
           }

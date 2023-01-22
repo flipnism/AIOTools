@@ -37,7 +37,10 @@ export const StepInput = ({ title, value, curvalue, ...props }) => {
     return (
         <div className="si-group"
             onMouseDown={(e) => {
+                if (e.button == 2)
+                    e.stopPropagation();
                 setIsup(e.button == 0 ? true : false)
+
                 setStartLong(true)
             }
             }
@@ -155,7 +158,10 @@ export const AlignTool = () => {
 
                 </div>
                 <div className="tool-align-group">
-                    <StepInput curvalue={margin} value={(e) => setMargin(e)} title="margin" />
+                    <StepInput
+
+
+                        curvalue={margin} value={(e) => setMargin(e)} title="margin" />
                     <sp-action-button size="s">select layers</sp-action-button>
                 </div>
             </div>

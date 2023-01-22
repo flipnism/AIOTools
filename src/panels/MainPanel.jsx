@@ -15,6 +15,10 @@ import {
   getTagLayers,
   findLayer,
   delay,
+  getLayers,
+  app,
+  getMaxName,
+  doSaveDocument,
 } from "../modules/bp";
 import BatchPlayModules from "../components/BatchPlayModules";
 import TabMenu from "../components/TabMenu";
@@ -26,6 +30,7 @@ import ColorTool from "../components/ColorTool";
 import { Textures } from "../components/Textures";
 import { OnlineImages } from "../components/OnlineImages";
 import { ContextMenu, MENU, SECONDMENU } from "../components/ContextMenu";
+import { createRedbox } from "../utils/layer";
 
 const SpMenu = wrapWc("sp-menu");
 const events = [{ event: "make" }, { event: "select" }];
@@ -60,6 +65,7 @@ export const MainPanel = () => {
   const [activeAccordion, setActiveAccordion] = useState(-1);
   const [tagLayers, setTagLayers] = useState([]);
   const [currentDocID, setCurrentDocID] = useState(0);
+  const [showMenu, setShowMenu] = useState(false);
 
   const tagRef = useRef(null);
   const textRef = useRef(null);
@@ -132,7 +138,12 @@ export const MainPanel = () => {
     if (e.shiftKey) {
       return;
     }
-    setMousepos([e.pageY, e.pageX])
+    setShowMenu(true);
+
+    if (e.pageY > 380)
+      setMousepos([380, 0])
+    else
+      setMousepos([e.pageY, e.pageX])
     if (cmRef != null)
       cmRef.current.doClick();
   }
@@ -153,7 +164,65 @@ export const MainPanel = () => {
 
   }
 
+  async function Save() {
+    const layers = await getLayers();
+    let channel = null;
+    for (const layer of layers) {
+      const name = layer.name;
+      switch (true) {
+        case name.includes("refly"):
+          channel = "refly"
+          break;
+        case name.includes("naufal"):
+          channel = "naufal"
+          break;
+        case name.includes("ogie"):
+          channel = "ogie"
+          break;
+        case name.includes("zoom"):
+          channel = "zoom"
+          break;
+        case name.includes("inang"):
+          channel = "inang"
+          break;
+      }
+    }
 
+    const savepathtoken = await token.getToken(channel);
+    if (app.activeDocument.title.includes("Untitled")) {
+      let num = 0;
+      let listfiles = getMaxName(await savepathtoken.getEntries());
+      if (listfiles == -Infinity)
+        listfiles = 0;
+      num = listfiles + 1;
+      const message = await doSaveDocument(
+        savepathtoken,
+        num,
+        channel);
+      logme("msg", message)
+
+      sendJsonMessage({
+        type: "filepath",
+        channel: channel,
+        fromserver: false,
+        data: message,
+        textdata: channel
+      })
+    } else if (app.activeDocument.title.includes(".psd")) {
+      const message = await doSaveDocument(
+        savepathtoken,
+        app.activeDocument.title.replace(".psd", ""),
+        channel);
+      logme("msg", message)
+      sendJsonMessage({
+        type: "filepath",
+        channel: channel,
+        fromserver: false,
+        data: message,
+        textdata: channel
+      })
+    }
+  }
   useEffect(() => {
     if (lastJsonMessage != null) {
       if (lastJsonMessage.fromserver) {
@@ -161,7 +230,7 @@ export const MainPanel = () => {
           if (textRef != null)
             textRef.current.updateText(lastJsonMessage.data)
         }
-        setShowLoading(false);
+        updateLoading(false);
       }
     }
 
@@ -184,6 +253,7 @@ export const MainPanel = () => {
           const alt_findlayer = await findLayer("dcsmstext_alt");
           await setText(alt_findlayer[0].layerID, textalt)
         }
+        appendTagLayer();
         setShowLoading(false);
         const texemblem = emblem.map((t) => { return t.text });
         if (texemblem.length > 0) {
@@ -205,7 +275,7 @@ export const MainPanel = () => {
 
         break;
       case "boxme":
-        selectText();
+        await createRedbox();
         break;
       case "tag":
         appendTagLayer();
@@ -319,18 +389,7 @@ export const MainPanel = () => {
         clickTabBtn={async (tag) => {
           switch (tag) {
             case "save":
-              handleShowYesNoDialog(
-                "Title",
-                <>
-                  <img src="/imgs/loading_05.gif" alt="" />
-                  <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Illo ipsam, adipisci provident commodi, est aliquam fuga rem
-                    repudiandae quaerat officia neque! Earum consequuntur ut,
-                    distinctio dolorem dolore libero adipisci aut!
-                  </p>
-                </>
-              );
+              await Save();
               break;
             case "newdoc":
 
@@ -405,14 +464,19 @@ export const MainPanel = () => {
       <ContextMenu
         ref={cmRef}
         mousePos={mousepos}
-        onMenuClicked={(which) => {
-          setActiveAccordion(MENU.findIndex(e => e === which));
+        onMenuClicked={async (which) => {
+          setShowMenu(false);
+          if (which)
+            setActiveAccordion(MENU.findIndex(e => e === which));
         }}
         onSecondMenuClicked={async (e) => {
           switch (e.target.textContent) {
-            case SECONDMENU[0]: break;
+            case SECONDMENU[0]:
+              await Save();
+              break;
             case SECONDMENU[1]:
               await createNewDoc();
+              appendTagLayer();
               break;
           }
 
@@ -423,7 +487,7 @@ export const MainPanel = () => {
         className="app"
         style={{ display: dialogState.show ? "none" : "block" }}
       >
-        <div className="maintab" >
+        <div className="maintab" style={{ visibility: showMenu ? "hidden" : "visible" }}>
           <div
             className="group-vertical main-content"
           >

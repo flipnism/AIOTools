@@ -48,7 +48,7 @@ module.exports = {
         ]
     },
     plugins: [
-        //new CleanWebpackPlugin(),
+        new CleanWebpackPlugin(),
         new CopyPlugin(['plugin'], {
             copyUnmodified: true
         })
