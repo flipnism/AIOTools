@@ -1,0 +1,327 @@
+$mainColor: #fd0
+
+.maintab
+    margin: 2px
+.group-horizontal
+    display: flex
+    flex-direction: row
+    flex-wrap: wrap
+.group-vertical
+    display: flex
+    flex-direction: column
+    flex-wrap: wrap
+.w100
+    width: 100%!important
+.h100
+    height: 100%!important
+.flexme
+    flex: 1
+.stretch
+    flex-grow: 1
+    width: 10%
+    position: relative
+
+.btn-group
+    & > .btn
+        cursor: pointer
+        width: 70px
+        height: 25px
+        font-size: .6rem
+        font-family: 'Bebas Neue Pro'
+
+.btn-icon
+    width: 30px
+    height: 30px
+    cursor: pointer
+    margin: 2px 2px
+.btn-icon:active
+    background: #fff
+
+.curve
+    background: url("/imgs/ic_master.png") 0px -60px
+
+.huesat
+    background: url("/imgs/ic_master.png") -30px -60px
+
+.exposure
+    background: url("/imgs/ic_master.png") -60px -60px
+
+.colorbalance
+    background: url("/imgs/ic_master.png") -90px -60px
+
+.fitimage
+    background: url("/imgs/ic_master.png") -120px -60px
+
+.gradientmap
+    background: url("/imgs/ic_master.png") -150px -60px
+
+.colorlookup
+    background: url("/imgs/ic_master.png") 0px -90px
+
+.text-line
+    color: #fff
+.text-edit
+    display: flex
+    position: absolute
+    top: 0
+    right: 0
+
+.tag-emblem:before
+    content: '[emblem] '
+.tag-style:before
+    content: '[style] '
+
+.sidebar
+    padding: 10px
+    display: flex
+    background: transparent
+    width: 100%
+    height: 100%
+    overflow: hidden
+
+.sidebar-btn-group
+    padding-left: 10px
+    display: flex
+    flex-direction: row
+    flex-wrap: wrap
+    width: 100%
+
+    & > *
+        flex-grow: 1
+        font-size: 0.6rem
+
+.batchplay-panel
+    display: flex
+    flex-wrap: wrap
+    flex-direction: row
+    padding: 10px
+    margin-top: 10px
+    border-radius: 8px
+    overflow: auto
+    background: #222
+
+.tab-menu
+    overflow: hidden
+    display: flex
+    justify-content: center
+    bottom: 0
+    right: 0
+    z-index: 4
+    cursor: pointer
+    flex-flow: column
+    flex-direction: row
+    align-content: center
+    align-items: flex-start
+    flex-wrap: wrap
+    padding: 10px
+
+.tab-trigger
+    width: 30px
+    height: 100%
+    top: 0
+    bottom: 0
+    position: absolute
+    display: flex
+.show-more
+    object-fit: contain
+.tabmenu-trigger
+    z-index: 3
+    position: absolute
+    width: 10px
+    top: 0
+    right: 0
+    height: 100%
+    background: #fd0
+.tab-content
+    overflow: hidden
+.tab-btn
+    cursor: pointer
+    width: 80px
+    background-position: center
+    background-size: 20px
+    margin: 5px
+    &:active
+        background-color: #88002d!important
+    &:hover
+        background-color: #007488
+
+.newdoc
+    background-image: url("/imgs/newdoc.png")
+.save
+    background-image: url("/imgs/save.png")
+.bp
+    background-image: url("/imgs/bp.png")
+
+.notice
+
+    position: absolute
+    overflow: none
+    font-weight: 900
+    font-family: Montserrat
+    font-size: 8em
+    text-align: center
+    color: rgba(255,255,255,.03)
+
+.loading-gif
+    display: flex
+    position: absolute
+    background: #222
+    flex-wrap: wrap
+    z-index: 999
+    width: 100%
+    height: 100%
+    flex-direction: column
+    justify-content: space-around
+    overflow: hidden
+    align-items: baseline
+    top: 0
+    > .loading-text
+        font-family: Montserrat
+        font-size: 1.6em
+        font-weight: 900
+
+.accordion
+    max-width: 100%
+    margin: 2px
+.accordion-title
+    display: flex
+    flex-direction: row
+    justify-content: space-between
+    cursor: pointer
+    color: #444
+    font-family: "Montserrat"
+    font-size: 2em
+    font-weight: 900
+    height: 18px
+    overflow: hidden
+    margin-top: 10px
+    &:hover
+        background-color: #333333
+        color: #fd0
+        padding-left: 10px
+.accordion-content
+    background-color: #222
+    padding: 10px
+    border-radius: 4px
+
+.hide
+    display: none!important
+
+// dialog
+.dialog-main
+    display: flex
+    padding: 10px 10px 20px
+    background-color: #222
+    margin: 0px
+    border-radius: 8px
+    > form > sp-heading
+        margin: 2px 1px 5px
+        padding: 0px
+        font-family: Montserrat
+        font-weight: 900
+    > form > sp-body
+        padding: 10px
+        display: flex
+        font-family: Montserrat
+        font-size: 0.8rem
+        text-align: justify
+
+//color
+
+.col-main
+    display: flex
+    flex-direction: column
+    flex-wrap: wrap
+.col-text
+    flex-grow: 1
+    > input
+        font-size: 2rem
+.btn-importcolor
+    font-family: Montserrat
+    font-weight: 900
+    width: 100%
+
+.col-slider
+    width: 100%
+.col-panel
+    display: flex
+    flex-wrap: wrap
+    flex-direction: row
+    align-content: stretch
+    justify-content: flex-start
+    align-items: center
+    padding: 10px
+    background: #151515
+    margin: 10px 0px 10px
+    border-radius: 5px
+    justify-content: center
+    > .col-box
+        cursor: pointer
+        width: 20px
+        height: 20px
+        border: 1px
+        &:hover
+            border: solid #fff
+        &:active
+            border: 3px solid #fd0
+.show-checkbox
+    justify-content: flex-end
+    align-items: center
+    font-size: .7rem
+    font-family: Montserrat
+.preview-box
+    display: flex
+    text-align: center
+    color: #666
+    justify-content: center
+    border-radius: 5px
+    overflow: hidden
+    .preview-box-top,
+    .preview-box-mid,
+    .preview-box-bottom
+        height: 20px
+        background-color: #fd0
+
+.fetch
+    width: 100%
+    justify-content: center
+    height: 120px
+    > div
+        color: #fff
+        height: 100px
+        margin: 10px
+        border-radius: 100px
+        font-family: Montserrat
+        font-size: 30px
+        font-weight: 900
+        text-align: center
+        &:hover
+            color: #fd0
+.multi-slider-panel
+    > sp-label
+        font-size: .6rem
+
+.multi-slider
+    padding: 2px
+    > *
+        padding: 0px
+        margin: 0px
+        flex-grow: 1
+.span-editor
+    display: flex
+    flex-direction: column
+    flex-wrap: wrap
+    flex: 1
+    overflow: hidden
+    height: auto
+.span-editor-label
+    margin: 0
+    padding: 1px 1px 1px 3px
+    flex: 1
+
+.span-tag
+    font-size: 0.6rem
+    color: #ffe600
+    width: 12px
+    margin: auto
+    cursor: pointer
