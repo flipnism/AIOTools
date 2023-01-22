@@ -3,3 +3,6 @@ build
 .env
 node_modules/*
 public
+package-lock.json
+testter.js
+hello.json
