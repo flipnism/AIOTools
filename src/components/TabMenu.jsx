@@ -24,11 +24,12 @@ const TabMenu = (props) => {
     return (
 
         <div ref={elRef} {...rest} className="tab-menu">
+            {/* 
             <div className="tab-content">
                 <sp-action-button onClick={() => clickTabBtn("save")} class="tab-btn save"></sp-action-button>
                 <sp-action-button onClick={() => clickTabBtn("newdoc")} class="tab-btn newdoc"></sp-action-button>
-                {/* <sp-action-button onMouseEnter={() => clickTabBtn("bp")} class="tab-btn bp"></sp-action-button> */}
-            </div>
+
+            </div> */}
 
             <LayerEffectTool />
             <div className="tab-child">{props.children}</div>

@@ -19,6 +19,8 @@ import {
   app,
   getMaxName,
   doSaveDocument,
+  fs,
+  collapseAll,
 } from "../modules/bp";
 import BatchPlayModules from "../components/BatchPlayModules";
 import TabMenu from "../components/TabMenu";
@@ -30,7 +32,9 @@ import ColorTool from "../components/ColorTool";
 import { Textures } from "../components/Textures";
 import { OnlineImages } from "../components/OnlineImages";
 import { ContextMenu, MENU, SECONDMENU } from "../components/ContextMenu";
-import { createRedbox } from "../utils/layer";
+import { appendTexturesFile, createRedbox, normalizeEmblem } from "../utils/layer";
+import { MCB } from "../components/MCB";
+import { ButtonList, btnLists } from "../components/ButtonList";
 
 const SpMenu = wrapWc("sp-menu");
 const events = [{ event: "make" }, { event: "select" }];
@@ -52,6 +56,7 @@ export const MainPanel = () => {
 
   const {
     sendJsonMessage,
+    getWebSocket,
     lastJsonMessage,
   } = useWebSocket(socketUrl, {
     onOpen: () => logme("socket opened"),
@@ -65,7 +70,7 @@ export const MainPanel = () => {
   const [activeAccordion, setActiveAccordion] = useState(-1);
   const [tagLayers, setTagLayers] = useState([]);
   const [currentDocID, setCurrentDocID] = useState(0);
-  const [showMenu, setShowMenu] = useState(false);
+  const [showMenu, setShowMenu] = useState(true);
 
   const tagRef = useRef(null);
   const textRef = useRef(null);
@@ -75,6 +80,10 @@ export const MainPanel = () => {
     setShowLoading(value);
   };
   window.updateLoading = updateLoading;
+  window.sockSendMessage = sendJsonMessage;
+  window.localSocket = getWebSocket;
+  window.roottoken = token;
+
   function appendTagLayer() {
     setTagLayers([{ name: "None", id: -20 }, ...getTagLayers()]);
   }
@@ -117,7 +126,15 @@ export const MainPanel = () => {
         tagRef.current.selectedIndex = selIndex;
     }
   }, [tagLayers])
+
+  const [tokenGGP, setTokenGGP] = useState(null);
+  function getTokenGGP() {
+    token.getToken(TOKEN.GGP).then((result) => {
+      setTokenGGP(result);
+    })
+  }
   useEffect(() => {
+    getTokenGGP();
 
     photoshop.action.addNotificationListener(events, onPSNotifier);
     return () => {
@@ -223,13 +240,36 @@ export const MainPanel = () => {
       })
     }
   }
+
+
+  async function appendGigalPixelImages(img) {
+    logme(tokenGGP);
+    const fileentry = await tokenGGP.getEntry(img);
+    await appendTexturesFile(fileentry, img).then(() => setGigapixelFile(null))
+
+  }
+
+
+
+
   useEffect(() => {
     if (lastJsonMessage != null) {
       if (lastJsonMessage.fromserver) {
-        if (lastJsonMessage.type == "sendtextclipboard") {
-          if (textRef != null)
-            textRef.current.updateText(lastJsonMessage.data)
+        const jsonevent = new CustomEvent("SOCKETMESSAGE", { detail: lastJsonMessage }, false);
+        document.dispatchEvent(jsonevent);
+        switch (lastJsonMessage.type) {
+          case "sendtextclipboard":
+            if (textRef != null)
+              textRef.current.updateText(lastJsonMessage.data)
+            break;
+          case "upscaledfile":
+            const namafile = lastJsonMessage.data.split("\\").pop();
+            logme("upscale", namafile);
+            appendGigalPixelImages(namafile)
+            break;
+
         }
+
         updateLoading(false);
       }
     }
@@ -254,6 +294,8 @@ export const MainPanel = () => {
           await setText(alt_findlayer[0].layerID, textalt)
         }
         appendTagLayer();
+
+        await collapseAll();
         setShowLoading(false);
         const texemblem = emblem.map((t) => { return t.text });
         if (texemblem.length > 0) {
@@ -274,7 +316,7 @@ export const MainPanel = () => {
       case "explode":
 
         break;
-      case "boxme":
+      case "box me":
         await createRedbox();
         break;
       case "tag":
@@ -338,9 +380,10 @@ export const MainPanel = () => {
       logme(error);
     }
   }
+  const [logtext, setLogtext] = useState("");
   const accordiondata = [
     {
-      index: 0,
+
       title: "Text Tools",
       content: (
         <>
@@ -352,9 +395,10 @@ export const MainPanel = () => {
             onTemplateSelectionChange={(e) => setTemplate(e)}
           />
           <TextTool
+            sendJsonMessage={sendJsonMessage}
             ref={textRef}
             BindOnClick={(i, text) => handleButtonClick(i, text)} />
-          <AlignTool />
+
           {tagLayers.length > 1 && (
             <div className="taglayer">
               <sp-picker size="s" ref={tagRef} class="strech w100">
@@ -379,41 +423,37 @@ export const MainPanel = () => {
 
         </>
       ),
-    }, {
-      index: 1,
+    }, /* {
+
       title: "Layer Effects",
       content: (<TabMenu
         style={{ width: "100%", height: "100%" }}
-
-
         clickTabBtn={async (tag) => {
           switch (tag) {
             case "save":
               await Save();
               break;
             case "newdoc":
-
               await createNewDoc();
               break;
 
           }
         }}
-      >
-        <BatchPlayModules
+      ><BatchPlayModules
           doLoad={updateLoading}
           token={token}
           askForToken={() => handleAskForToken("sidebar", "Batchplay Template")}
         />
         <div className="batchplay-panel"></div>
       </TabMenu>)
-    },
+    }, */
     {
-      index: 2,
+
       title: "Colorizer",
       content: <ColorTool docIDChange={currentDocID} />,
     },
     {
-      index: 3,
+
       title: "SmartObject Bank",
       content: (
         <SmartObjects
@@ -428,7 +468,7 @@ export const MainPanel = () => {
       ),
     },
     {
-      index: 4,
+
       title: "Stock Textures",
       content: (
         <Textures
@@ -440,14 +480,31 @@ export const MainPanel = () => {
       ),
     },
     {
-      index: 5,
+
       title: "Online Images",
       content: <OnlineImages token={token} />,
-    },
+    }, {
+      title: "Batchplay Playground",
+      content: (
+        <div className="group-vertical">
+
+          <div className="log-btn-group">
+            <div className="log-clear" onClick={() => { document.querySelector('.log-text').textContent = ""; }}>X</div>
+            <MCB value="log" id="log-cb" />
+          </div>
+          <div className="log-panel">
+
+            <div className="log-text">
+              {logtext}
+            </div>
+          </div>
+        </div>
+      )
+    }
   ];
 
 
-
+  const [menuPanelVisibility, setMenuPanelVisibility] = useState();
   return (
     <>
       <div className="suredialog">
@@ -481,16 +538,37 @@ export const MainPanel = () => {
           }
 
         }}
-      />
+      >
+        <TabMenu
+          clickTabBtn={async (tag) => {
+            switch (tag) {
+              case "save":
+                await Save();
+                break;
+              case "newdoc":
+                await createNewDoc();
+                break;
+
+            }
+          }}
+        ><BatchPlayModules
+            doLoad={updateLoading}
+            token={token}
+            onBPButtonClicked={(e) => {
+
+            }}
+            askForToken={() => handleAskForToken("sidebar", "Batchplay Template")}
+          />
+          <div className="batchplay-panel"></div>
+        </TabMenu>
+      </ContextMenu>
       <LoadingGIF show={showLoading} />
       <div
         className="app"
         style={{ display: dialogState.show ? "none" : "block" }}
       >
         <div className="maintab" style={{ visibility: showMenu ? "hidden" : "visible" }}>
-          <div
-            className="group-vertical main-content"
-          >
+          <div className="group-vertical main-content" >
             <div className="accordion">
               {accordiondata.map((data, index) => {
                 return (
@@ -500,19 +578,19 @@ export const MainPanel = () => {
                         className="accordion-title"
                         style={{
                           color:
-                            activeAccordion == data.index ? "#fd0" : "#444",
+                            activeAccordion == index ? "#fd0" : "#444",
                         }}
                         onClick={() => {
-                          if (activeAccordion == data.index)
+                          if (activeAccordion == index)
                             setActiveAccordion(-1);
-                          else setActiveAccordion(data.index);
+                          else setActiveAccordion(index);
                         }}
                       >
                         {data.title}
                       </div>
                       <div
                         className={
-                          activeAccordion == data.index
+                          activeAccordion == index
                             ? "accordion-content"
                             : "accordion-content hide"
                         }
@@ -527,6 +605,33 @@ export const MainPanel = () => {
           </div>
         </div>
       </div>
+      <ButtonList
+        onButtonItemMainClick={async (tag) => {
+          switch (tag) {
+            case "save":
+              await Save();
+              break;
+            case "newdoc":
+              await createNewDoc();
+              break;
+            case "collapse":
+              await collapseAll();
+              break;
+
+          }
+        }}
+        onButtonItemClick={(which) => {
+          if (which == "☢") {
+            setShowMenu(true);
+            cmRef.current.doClick();
+            return;
+          }
+          setShowMenu(false);
+          cmRef.current.doHide();
+          if (which)
+            setActiveAccordion(btnLists.findIndex(e => e === which));
+        }}
+      />
     </>
   );
 };

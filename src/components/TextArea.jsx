@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+ import React, { Component } from 'react'
 import "../sass/textarea.sass"
 export const TextArea = (props) => {
 

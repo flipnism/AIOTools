@@ -2,19 +2,22 @@ import React, { forwardRef, useEffect, useImperativeHandle, useState } from "rea
 import "../sass/contextmenu.sass"
 export const MENU = [
     "text",
-    "layer tool",
     "color",
     "smart object",
     "textures",
-    "image search"]
+    "image search",
+    "batchplay"]
 export const SECONDMENU = ["save", "new doc"]
 export const ContextMenu = forwardRef(({ onMenuClicked, onSecondMenuClicked, ...props }, ref) => {
 
-    const [showMe, setShowMe] = useState(false);
+    const [showMe, setShowMe] = useState(true);
     useImperativeHandle(ref, () => ({
 
         doClick() {
             setShowMe(true);
+        },
+        doHide() {
+            setShowMe(false);
         }
     }));
 
@@ -26,22 +29,17 @@ export const ContextMenu = forwardRef(({ onMenuClicked, onSecondMenuClicked, ...
     return (
         <><div className="ghost-panel"
             onClick={(e) => {
-                setShowMe(false);
-                onMenuClicked(null)
+                //setShowMe(false);
+                //onMenuClicked(null)
             }}
-            style={{ display: showMe ? "block" : "none" }}
-        >
-
-            <div className="context-menu-panel" style={{ display: showMe ? "flex" : "none", top: props.mousePos[0], left: 0 }} >
+            style={{ display: showMe ? "flex" : "none" }}>
+            <div className="layer-effects-panel">{props.children}</div>
+            {/* <div className="context-menu-panel" style={{ display: showMe ? "flex" : "none", top: props.mousePos[0], left: 0 }} >
                 {MENU.map((menu, index) => {
-                    return (<div onClick={(e) => handleClick(e, menu)} key={index} >{menu}</div>)
+                    return (<div onClick={(e) => handleClick(e, menu)} key={index} >{menu.toUpperCase()}</div>)
                 })}
-            </div>
-            <div className="cm-btn-group" style={{ display: showMe ? "flex" : "none", top: props.mousePos[0] + 5, left: 0 }}>
+            </div> */}
 
-                <div className="cm-btn" onClick={onSecondMenuClicked}>{SECONDMENU[0]}</div>
-                <div className="cm-btn" onClick={onSecondMenuClicked}>{SECONDMENU[1]}</div>
-            </div>
 
         </div>
         </>

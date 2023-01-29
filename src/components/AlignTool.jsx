@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { PSBP, PSCoreModal, logme, photoshop } from "../modules/bp";
 import { ALIGN, alignLayers, getSelectedLayers, getGroupBounds } from "../utils/layer";
 import { MCB } from "./MCB";
-
 export const StepInput = ({ title, value, curvalue, ...props }) => {
     const [val, setVal] = useState(curvalue);
     const [to, setTo] = useState(100);
@@ -56,7 +55,9 @@ export const StepInput = ({ title, value, curvalue, ...props }) => {
     )
 }
 
+
 export const AlignTool = () => {
+
     const events = [{ event: "select" }];
     const [toCanvas, setToCanvas] = useState(false);
     const [margin, setMargin] = useState(localStorage.getItem("GAPMARGIN") == null ? 0 : parseInt(localStorage.getItem("GAPMARGIN")));

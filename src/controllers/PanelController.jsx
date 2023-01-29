@@ -32,7 +32,7 @@ export class PanelController {
   create() {
     this[_root] = document.createElement("div");
     this[_root].className = "root-div";
-    this[_root].style.height = "100vh";
+    this[_root].style.height = "100%";
     this[_root].style.overflow = "auto";
     this[_root].style.padding = "0px";
 
@@ -54,7 +54,7 @@ export class PanelController {
     }
   }
 
-  destroy() {}
+  destroy() { }
 
   invokeMenu(id) {
     const menuItem = this[_menuItems].find((c) => c.id === id);

@@ -42,3 +42,16 @@ export function chunkify(a, n, balanced) {
 
     return out;
 }
+
+
+export function testlog(...msg) {
+    const cb = document.getElementById('log-cb');
+    const logtext = document.querySelector('.log-text');
+    if (cb.checked) {
+        logtext.textContent = logtext.textContent + "\n" + msg.join('\n\t');
+    }
+
+
+
+}
+window.logUi = testlog;

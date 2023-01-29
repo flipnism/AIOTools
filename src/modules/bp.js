@@ -7,8 +7,8 @@ export const app = photoshop.app;
 export const fs = require("uxp").storage.localFileSystem;
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-window.PSCoreModal = PSCoreModal;
-window.PSBP = PSBP;
+
+
 
 async function DocID() {
   return app.activeDocument.id;
@@ -294,41 +294,47 @@ export async function runModalTasks(target) {
   });
 }
 export async function executeBPFile(interpreter, snippet) {
-  return new Promise((r, j) => {
-    runModalTasks(async (executionContext, descriptor) => {
-      let suspensionID = await executionContext.hostControl.suspendHistory({
-        documentID: app.activeDocument.id,
-        name: "Bokeh Me",
-      });
 
-      interpreter.import("uxp", require("uxp"));
-      interpreter.import("os", require("os"));
-      interpreter.run(`
+
+  await PSCoreModal(async (executionContext, descriptor) => {
+    let suspensionID = await executionContext.hostControl.suspendHistory({
+      documentID: app.activeDocument.id,
+      name: "Bokeh Me",
+    });
+
+    interpreter.import("uxp", require("uxp"));
+    interpreter.import("os", require("os"));
+    interpreter.run(`
             "use strict";
             
-            async function userCode(){
+                async function userCode(){
+                const photoshop = require("photoshop");
                 const BP = require("photoshop").action.batchPlay;
                 const app = require("photoshop").app;
                 const fs = require('uxp').storage.localFileSystem;
                 const websocket = new WebSocket("ws://localhost:7898/Server", "ps-protocol")
+                const ps_CoreModal = photoshop.core.executeAsModal;
+                const ps_Bp = photoshop.action.batchPlay;
+                const ps_Fs = require("uxp").storage.localFileSystem;
                 ${snippet}
             };
             exports.returnValue = userCode();
             `);
 
-      await executionContext.hostControl.resumeHistory(suspensionID);
-      r("done");
-    });
-  });
+    await executionContext.hostControl.resumeHistory(suspensionID).catch((e) => logme(e));;
+
+  }).catch((e) => logme(e));;
+
 }
-
-
 export async function saveDocument(filename, channel) {
   await PSCoreModal(async () => {
 
   }, { commandName: "save document" })
 }
+export async function collapseAll() {
+  photoshop.core.performMenuCommand({ commandID: 2965 });
 
+}
 export async function createNewDoc() {
   await runModalTasks(async () => {
     try {
@@ -1027,14 +1033,17 @@ export async function bpSync(command, tagname) {
   return new Promise(async (resolve, reject) => {
 
     await PSCoreModal(async () => {
-      const result = await PSBP([command], {}).catch(e => logme(e));
+      const result = await PSBP(command, {}).catch(e => { logme(e); reject() });
       resolve(result);
-    }, { commandName: tagname }).catch(e => logme(e))
+    }, { commandName: tagname }).catch(e => { logme(e); reject() })
   })
 }
 window.bpSync = bpSync;
-
-
+window.ps_Bp = PSBP;
+window.ps_CoreModal = PSCoreModal;
+window.ps_App = app;
+window.ps_Fs = fs;
+window._delay = delay;
 const debug = true;
 export function logme(...obj) {
   if (debug)

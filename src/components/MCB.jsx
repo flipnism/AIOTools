@@ -9,3 +9,4 @@ export const MCB = (props) => {
         </div>
     )
 }
+window.mcb = MCB;

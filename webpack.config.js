@@ -2,11 +2,16 @@ const path = require("path");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
+var webpack = require("webpack");
 module.exports = {
     entry: './src/index.jsx',
     optimization: {
-        minimizer: [new UglifyJsPlugin()],
+        minimizer: [
+            new TerserPlugin(),
+        ],
     },
+    mode: 'production',
     output: {
         path: path.resolve(__dirname, 'public'),
         filename: 'index.js',
@@ -16,7 +21,8 @@ module.exports = {
     externals: {
         uxp: 'commonjs2 uxp',
         photoshop: 'commonjs2 photoshop',
-        os: 'commonjs2 os'
+        os: 'commonjs2 os',
+        fs: 'commonjs2 fs',
     },
     resolve: {
         extensions: [".js", ".jsx"]

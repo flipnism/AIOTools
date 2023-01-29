@@ -1,4 +1,4 @@
-import { PSBP, PSCoreModal, app, logme, runModalTasks, fs } from "../modules/bp";
+import { PSBP, PSCoreModal, app, logme, runModalTasks, fs, delay } from "../modules/bp";
 
 export function getSelectedLayers() {
     const selectedlayers = app.activeDocument.activeLayers;
@@ -125,20 +125,69 @@ export async function fitImage(isWidth) {
     await alignLayers(ALIGN.CENTERVERTICAL, true).catch(e => logme(e));
     await alignLayers(ALIGN.CENTERHORIZONTAL, true).catch(e => logme(e));
 }
+export async function normalizeEmblem() {
+    logme("normalize")
+    await PSCoreModal(async () => {
+        await PSBP([{
+            "_obj": "rasterizeLayer",
+            "_target": [
+                {
+                    "_ref": "layer",
+                    "_enum": "ordinal",
+                    "_value": "targetEnum"
+                }
+            ]
+        }, {
+            "_obj": "newPlacedLayer"
+        }], {}).catch(e => logme(e))
+        await app.activeDocument.activeLayers[0].scale(50, 50);
 
-export async function appendTexturesFile(entry) {
-    await runModalTasks(async () => {
+    }, { commandName: "hello" }).catch(e => logme(e))
+}
+export async function appendTexturesFile(entry, filename) {
+
+    await PSCoreModal(async () => {
+        const filepath = await fs.createSessionToken(entry)
+        logme(entry, filepath);
+        await delay(300);
         await PSBP([{
             "_obj": "placeEvent",
             "null": {
-                _path: await fs.createSessionToken(entry),
+                _path: filepath,
                 _kind: "local",
             },
             "linked": true
-        }], {});
-        await fitImage(true).catch(e => logme(e));
+        }], {}).catch(e => logme("place", e))
 
-    }).catch(e => logme(e))
+        if (filename.includes("0001")) {
+            await PSBP([{
+                "_obj": "rasterizeLayer",
+                "_target": [
+                    {
+                        "_ref": "layer",
+                        "_enum": "ordinal",
+                        "_value": "targetEnum"
+                    }
+                ]
+            }, {
+                "_obj": "newPlacedLayer"
+            }], {}).catch(e => logme("rasterizeLayer", e));
+            var currentDocument = app.activeDocument;
+            var layers = currentDocument.activeLayers;
+            var SelectedLayer = layers[0];
+            await SelectedLayer.moveAbove(currentDocument.layers[0]);
+
+        } else {
+            await fitImage(true);
+        }
+
+
+
+
+    }, { commandName: "appendTexture" }).catch(e => logme(e))
+
+
+
 
 }
 
@@ -359,7 +408,7 @@ export async function createRedbox() {
                     "name": "redRect"
                 }
 
-            }], {})
+            }], {}).catch(e => logme(e))
             const newlayer = app.activeDocument.activeLayers[0]
             newlayer.moveBelow(layer);
             const [id1, id2] = [layer.id, newlayer.id]
