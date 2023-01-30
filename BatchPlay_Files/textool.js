@@ -220,11 +220,12 @@ async function alignLayers(alignto, toCanvas) {
 async function btnListener(e) {
     const _all = app.activeDocument.activeLayers;
     const ver = _all.sort(function (a, b) { return a.boundsNoEffects.top - b.boundsNoEffects.top });
+    const verbot = _all.sort(function (a, b) { return b.boundsNoEffects.bottom - a.boundsNoEffects.bottom });
     const _left = _all.sort(function (a, b) { return a.boundsNoEffects.left - b.boundsNoEffects.left });
     const _right = _all.sort(function (a, b) { return b.boundsNoEffects.right - a.boundsNoEffects.right });
 
     const top = ver[0].boundsNoEffects.top;
-    const bottom = ver[ver.length - 1].boundsNoEffects.bottom;
+    const bottom = verbot[0].boundsNoEffects.bottom;
     const left = _left[0].boundsNoEffects.left;
     const right = _right[0].boundsNoEffects.right;
 
@@ -250,6 +251,7 @@ async function btnListener(e) {
             break;
         case arr.bl:
             await geser(-(left) + (leftGut + margin), (docHeight - bottom) - margin)
+            logUi(docHeight, bottom, margin)
 
 
             break;
@@ -266,7 +268,8 @@ async function btnListener(e) {
 
             break;
         case arr.tt:
-            await geser(0, margin + (-top))
+            await geser(0, -(top) + margin)
+            break;
 
         case arr.bm:
 

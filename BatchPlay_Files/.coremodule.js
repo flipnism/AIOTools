@@ -1,5 +1,6 @@
 
 var ps_Core = require('photoshop').core;
+const nodefs = require('fs');
 const C = {
     btn: "sp-action-button",
     picker: "sp-picker",
@@ -31,12 +32,14 @@ class EL {
     constructor(istextool) {
         if (istextool)
             this._mainpanel = document.querySelector(".bp-textoolpanel");
-        else
+        else {
             this._mainpanel = document.querySelector(".batchplay-panel");
-        for (const child of this._mainpanel.children) {
-            if (!child.classList.contains("textool") && !child.classList.contains("googletool"))
-                this._mainpanel.removeChild(child);
+            while (this._mainpanel.firstChild)
+                this._mainpanel.removeChild(this._mainpanel.firstChild)
+
+
         }
+
 
 
 
@@ -54,6 +57,7 @@ class EL {
         ee.setAttribute("style", __style(styledata))
 
     }
+
     makegroup(ishorizontal) {
         const group = document.createElement("div");
         group.className = ishorizontal ? "group-horizontal" : "group-vertical";
@@ -79,9 +83,17 @@ class EL {
         _el.firstChild.appendChild(menuitem);
 
     }
+    minmaxval(_el, s) {
+        _el.setAttribute("min", s.min)
+        _el.setAttribute("max", s.max)
+        _el.setAttribute("value", s.value)
+        _el.setAttribute("step", s.step)
+    }
+
 
     add(el, _cls, text, type) {
         let _d = document.createElement(el);
+        _d.setAttribute("size", "s");
         _d.className = _cls;
         if (el == C.input) {
             _d.setAttribute("value", text);
@@ -92,22 +104,29 @@ class EL {
         else if (el == C.cb) {
             _d = document.createElement(C.cb);
             _d.className = _cls;
-            _d.setAttribute("size", "s");
+
             _d.textContent = text;
 
         } else if (el == C.tf) {
-            _d.setAttribute("size", "s");
+
             if (type) {
                 _d.setAttribute("type", type);
             }
         } else if (el == C.picker) {
-            _d.setAttribute("size", "s");
+
             const opt = document.createElement("sp-menu");
             opt.setAttribute("slot", "options");
             _d.appendChild(opt);
+        } else if (el == C.slider) {
+
+            const lbl = document.createElement("sp-label");
+            _d.setAttribute("data-name", text);
+            lbl.setAttribute("slot", "label");
+            lbl.textContent = text;
+            _d.appendChild(lbl);
         }
         else {
-            _d.setAttribute("size", "s");
+
             _d.textContent = text;
         }
         return _d;
@@ -144,7 +163,8 @@ class EL {
     }
 
 }
-
+window.EL = EL;
+window.C = C;
 function makeElement(el, _classname) {
     const _div = document.createElement(el);
     _div.className = _classname;

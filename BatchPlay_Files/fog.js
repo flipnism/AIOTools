@@ -36,9 +36,14 @@ const params = `<!DOCTYPE optics>
 
 const layer = app.activeDocument.activeLayers[0];
 
-if(layer){
-await BP([{
-   "_obj": "9D94A847-5C51-4751-947C-36E2076FD77C",
-   "$parM": params
-}],{})
-}
+(async () => {
+
+
+   if (layer) {
+      await BP([{
+         "_obj": "9D94A847-5C51-4751-947C-36E2076FD77C",
+         "$parM": params
+      }], {})
+   }
+
+})()
