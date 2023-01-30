@@ -5,7 +5,7 @@ const btngroup = _el.makegroup(true);
 
 
 const txtfield = _el.add(C.tf, "imagesearch", "", "search");
-_el.attr(_ROOT, ["style", "width:100%;"]);
+_el.attr(_ROOT, ["style", "width:100%;margin-top:10px;"]);
 _el.attr(txtfield, ["style", "width:100%;"]);
 
 

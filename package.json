@@ -1,25 +1,24 @@
 {
-  "name": "com.adobe.uxp.starter.react",
+  "name": "hello.dcsms.aiotools",
   "version": "1.0.0",
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
     "watch": "nodemon -w src -e js,jsx,json,css,sass,html -w webpack.config.js -x npm run build",
     "build": "webpack --mode development",
     "prod": "webpack",
-    "ugly": "webpack && uglifyjs ./public/index.js -c -m -o ./public/index.min.js",
-    "uxp:load": "cd dist && uxp plugin load",
-    "uxp:reload": "cd dist && uxp plugin reload",
-    "uxp:watch": "cd dist && nodemon --exec \"uxp plugin reload\" -e js,css,html",
-    "uxp:debug": "cd dist && uxp plugin debug"
+    "ugly": "webpack && uglifyjs ./public/index.js -c -m -o ./public/index.min.js"
   },
-  "author": "Adobe Inc",
+  "author": "dcsms@live.com",
   "license": "Apache-2.0",
   "devDependencies": {
     "@babel/core": "^7.8.7",
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
     "@babel/plugin-syntax-class-properties": "^7.10.4",
     "@babel/plugin-transform-react-jsx": "^7.8.3",
+    "@babel/preset-env": "^7.20.2",
     "babel-loader": "^8.0.6",
+    "babel-minify": "^0.5.2",
+    "babel-preset-minify": "^0.5.2",
     "clean-webpack-plugin": "^2.0.2",
     "copy-webpack-plugin": "^5.0.3",
     "css-loader": "^2.1.1",

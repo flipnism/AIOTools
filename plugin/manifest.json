@@ -26,13 +26,6 @@
         ".svg",
         ".png"
       ]
-    },
-    "webview": {
-      "allow": "yes",
-      "domains": [
-        "https://*.adobe.com",
-        "https://*.google.com"
-      ]
     }
   },
   "entrypoints": [
@@ -43,20 +36,20 @@
         "default": "AIO Tools"
       },
       "minimumSize": {
-        "width": 230,
-        "height": 200
+        "width": 350,
+        "height": 590
       },
       "maximumSize": {
-        "width": 2000,
-        "height": 2000
+        "width": 350,
+        "height": 590
       },
       "preferredDockedSize": {
-        "width": 230,
+        "width": 350,
         "height": 300
       },
       "preferredFloatingSize": {
-        "width": 230,
-        "height": 300
+        "width": 350,
+        "height": 590
       },
       "icons": [
         {

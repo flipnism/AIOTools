@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ThumbnailTemplate } from "../components/ThumbnailTemplate";
 import YesNoDialog from "../components/YesNoDialog";
-import { AlignTool } from "../components/AlignTool";
-
 import { TextTool } from "../components/TextTool";
 import { TOKEN, Token } from "../modules/Token";
 import {
@@ -19,7 +17,6 @@ import {
   app,
   getMaxName,
   doSaveDocument,
-  fs,
   collapseAll,
 } from "../modules/bp";
 import BatchPlayModules from "../components/BatchPlayModules";
@@ -589,6 +586,9 @@ export const MainPanel = () => {
                         {data.title}
                       </div>
                       <div
+                        onContextMenu={(e) => {
+                          e.stopPropagation();
+                        }}
                         className={
                           activeAccordion == index
                             ? "accordion-content"

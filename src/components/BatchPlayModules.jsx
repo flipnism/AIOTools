@@ -73,7 +73,7 @@ const BatchPlayModules = (props) => {
                 const coremodule_str = await coremodule.read();
                 const getscriptfile = await tokenentry.getEntry(f.name);
                 const readfile = await getscriptfile.read();
-                await executeBPFile(interpreter, coremodule_str + readfile).then(() => { resolve("done") })
+                await executeBPFile(interpreter, fav.length > 0 ? readfile : coremodule_str + readfile).then(() => { resolve("done") })
 
             }).then(() => {
                 doLoad(false);

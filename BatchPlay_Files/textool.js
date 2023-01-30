@@ -2,6 +2,7 @@
 
 const _el2 = new EL(true);
 const _ROOT2 = _el2.mainparent(true, "textool");
+
 const _main = _el2.makegroup(true);
 
 
@@ -53,7 +54,7 @@ const cbstyle = {
 HTMLElement.prototype.STYLE = function (_style) {
     _el2.style(this, _style);
 }
-
+_ROOT2.STYLE({ marginTop: "10px" })
 _main.STYLE(parentstyle);
 
 const arr = {
