@@ -478,7 +478,7 @@ export const MainPanel = () => {
         </>
       ),
     }, /* {
-
+ 
       title: "Layer Effects",
       content: (<TabMenu
         style={{ width: "100%", height: "100%" }}
@@ -537,23 +537,6 @@ export const MainPanel = () => {
 
       title: "Online Images",
       content: <OnlineImages token={token} />,
-    }, {
-      title: "Batchplay Playground",
-      content: (
-        <div className="group-vertical">
-
-          <div className="log-btn-group">
-            <div className="log-clear" onClick={() => { document.querySelector('.log-text').textContent = ""; }}>X</div>
-            <MCB value="log" id="log-cb" />
-          </div>
-          <div className="log-panel">
-
-            <div className="log-text">
-              {logtext}
-            </div>
-          </div>
-        </div>
-      )
     }
   ];
 

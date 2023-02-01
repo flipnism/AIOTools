@@ -88,6 +88,63 @@
           ]
         }
       ]
+    },
+    {
+      "type": "panel",
+      "id": "logpanel",
+      "label": {
+        "default": "Log"
+      },
+      "minimumSize": {
+        "width": 350,
+        "height": 590
+      },
+      "maximumSize": {
+        "width": 350,
+        "height": 590
+      },
+      "preferredDockedSize": {
+        "width": 350,
+        "height": 300
+      },
+      "preferredFloatingSize": {
+        "width": 350,
+        "height": 590
+      },
+      "icons": [
+        {
+          "width": 32,
+          "height": 32,
+          "path": "icons/icon_D.png",
+          "scale": [
+            1,
+            2
+          ],
+          "theme": [
+            "dark",
+            "darkest"
+          ],
+          "species": [
+            "generic"
+          ]
+        },
+        {
+          "width": 32,
+          "height": 32,
+          "path": "icons/icon_N.png",
+          "scale": [
+            1,
+            2
+          ],
+          "theme": [
+            "lightest",
+            "light"
+          ],
+          "species": [
+            "generic"
+          ]
+        }
+      ]
     }
   ],
   "icons": [

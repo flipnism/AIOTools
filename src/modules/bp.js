@@ -296,11 +296,8 @@ export async function runModalTasks(target) {
 export async function executeBPFile(interpreter, snippet) {
 
 
-  await PSCoreModal(async (executionContext, descriptor) => {
-    let suspensionID = await executionContext.hostControl.suspendHistory({
-      documentID: app.activeDocument.id,
-      name: "Bokeh Me",
-    });
+  await PSCoreModal(async () => {
+
 
     interpreter.import("uxp", require("uxp"));
     interpreter.import("os", require("os"));
@@ -321,7 +318,6 @@ export async function executeBPFile(interpreter, snippet) {
             exports.returnValue = userCode();
             `);
 
-    await executionContext.hostControl.resumeHistory(suspensionID).catch((e) => logme(e));;
 
   }).catch((e) => logme(e));;
 

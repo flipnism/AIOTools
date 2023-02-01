@@ -3,10 +3,13 @@ import { entrypoints } from "uxp";
 import "./sass/main.sass";
 import "./sass/aligntool.sass";
 import { PanelController } from "./controllers/PanelController";
-import { MainPanel } from "./panels/MainPanel";
 import { logme } from "./modules/bp";
+import { MainPanel } from "./panels/MainPanel";
+import { LogPanel } from "./panels/LogPanel";
 
-
+const logPanel = new PanelController(() => <LogPanel />, {
+    id: "logpanel"
+})
 const mainpanelController = new PanelController(() => <MainPanel />,
     {
         id: "mainpanel",
@@ -40,7 +43,8 @@ entrypoints.setup({
     },
     commands: {},
     panels: {
-        mainpanel: mainpanelController
+        mainpanel: mainpanelController,
+        logpanel: logPanel
     }
 })
 

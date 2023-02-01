@@ -50,11 +50,11 @@ module.exports = {
             {
                 test: /\.sass$/,
                 use: ["style-loader", "css-loader", "sass-loader"]
-            }
+            },
         ]
     },
     plugins: [
-        new CleanWebpackPlugin(),
+        // new CleanWebpackPlugin(),
         new CopyPlugin(['plugin'], {
             copyUnmodified: true
         })

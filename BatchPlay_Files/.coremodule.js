@@ -1,6 +1,4 @@
 
-var ps_Core = require('photoshop').core;
-const nodefs = require('fs');
 const C = {
     btn: "sp-action-button",
     picker: "sp-picker",
@@ -13,9 +11,9 @@ const C = {
     class_btn: "bp-button"
 }
 
-const debug = true;
 
-document.getElementById("log-cb").checked = debug;
+
+
 
 function __style(st) {
     function s(k) {
@@ -238,6 +236,7 @@ class JulBox {
 
 
 }
+window.JulBox = JulBox;
 
 
 class HoldButton {
@@ -320,3 +319,60 @@ class HoldButton {
 
     }
 }
+window.HoldButton = HoldButton;
+
+async function isApplied(id) {
+    return new Promise(async (resolve) => {
+        await ps_CoreModal(async () => {
+            const result = await ps_Bp([{
+                _obj: "get",
+                _target: [
+                    {
+                        _property: "smartObject"
+                    },
+                    {
+                        _ref: "layer",
+                        _id: id
+                    }
+                ]
+            }], {}).catch(e => resolve(false));
+            const so = result[0].smartObject;
+            if (so) {
+                resolve([so.filterFX.length > 0, so.filterFX]);
+            } else {
+                resolve([false, null]);
+            }
+
+
+        }, { commandName: "some tag" }).catch(e => resolve([false, null]));
+    })
+}
+window.isApplied = isApplied;
+
+const setFilter = (index, _filter) => {
+    return {
+        "_obj": "set",
+        "_target": [
+            {
+                "_ref": "filterFX",
+                "_index": index
+            },
+            {
+                "_ref": "layer",
+                "_enum": "ordinal",
+                "_value": "targetEnum"
+            }
+        ],
+        "filterFX": {
+            _obj: "filterFX",
+            filter: _filter
+        }
+    }
+}
+
+const activelayerID = () => {
+    return app.activeDocument.activeLayers[0].id;
+}
+window.lyrID = activelayerID;
+
+window.setFilter = setFilter;

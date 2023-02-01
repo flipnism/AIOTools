@@ -1,3 +1,4 @@
+
 const nodefs = require('fs');
 const CONF_FILE = "plugin-data:/RAW_FILT_CONFIG.json";
 function readConfig() {
@@ -16,10 +17,12 @@ let sliders = [
     { id: 2, name: 'sharpen', min: 0, max: 150, value: 0, step: 1 },
     { id: 3, name: 'noise reduction', min: 0, max: 100, value: 0, step: 1 },
     { id: 4, name: 'colornoise reduction', min: 0, max: 100, value: 0, step: 1 },
-    { id: 5, name: 'stylization', min: 0, max: 10, value: 0, step: 0.1 },
-    { id: 6, name: 'cleanliness', min: 0, max: 10, value: 0, step: 0.1 },
-    { id: 7, name: 'brush scale', min: 0, max: 10, value: 0, step: 0.1 },
-    { id: 8, name: 'microbrush', min: 0, max: 10, value: 0, step: 0.1 },
+    { id: 5, name: 'vignette', min: -100, max: 100, value: 0, step: 1 },
+    { id: 6, name: 'grain', min: 0, max: 100, value: 0, step: 1 },
+    { id: 7, name: 'stylization', min: 0, max: 10, value: 0, step: 0.1 },
+    { id: 8, name: 'cleanliness', min: 0, max: 10, value: 0, step: 0.1 },
+    { id: 9, name: 'brush scale', min: 0, max: 10, value: 0, step: 0.1 },
+    { id: 10, name: 'microbrush', min: 0, max: 10, value: 0, step: 0.1 },
 ];
 const RF_Panel = new EL(false);
 const RF_ROOT = RF_Panel.mainparent(false, "rf-root");
@@ -85,10 +88,18 @@ RF_ROOT.appendChild(RF_SLIDER);
 RF_Panel.attachGroup(RF_ROOT);
 
 
-async function onReceiveListner(result) {
-    isApplied(result.layerID[0]).then((result) => {
-        if (result[0]) {
+async function onReceiveListner(rr) {
+    try {
+        isApplied(rr.layerID[0]).then((result) => {
+            sliders.forEach((sl) => {
+                document.querySelector(`.slider_${sl.id}`).setAttribute("value", 0);
+            });
+            if (!result[0]) return;
+
+            const rawfilt = result[1].filter(e => e.filter._obj == "Adobe Camera Raw Filter");
+            if (rawfilt.length <= 0) return;
             const _filter = result[1].map(a => { return a.filter });
+
             for (const fltr of _filter) {
                 if (fltr._obj === "Adobe Camera Raw Filter") {
                     sliders[0].value = fltr.$CrTx;
@@ -96,24 +107,24 @@ async function onReceiveListner(result) {
                     sliders[2].value = fltr.sharpen;
                     sliders[3].value = fltr.$LNR;
                     sliders[4].value = fltr.$CNR;
+                    sliders[5].value = fltr.$PCVA;
+                    sliders[6].value = fltr.$GRNA;
                 } else if (fltr._obj === "oilPaint") {
-                    sliders[5].value = fltr.stylization;
-                    sliders[6].value = fltr.cleanliness;
-                    sliders[7].value = fltr.brushScale;
-                    sliders[8].value = fltr.microBrush;
+                    sliders[7].value = fltr.stylization;
+                    sliders[8].value = fltr.cleanliness;
+                    sliders[9].value = fltr.brushScale;
+                    sliders[10].value = fltr.microBrush;
                 }
             }
 
             sliders.forEach((sl) => {
                 document.querySelector(`.slider_${sl.id}`).setAttribute("value", sl.value);
             });
-        } else {
-            sliders.forEach((sl) => {
-                document.querySelector(`.slider_${sl.id}`).setAttribute("value", 0);
-            });
-        }
-    })
 
+        })
+    } catch (error) {
+        console.log(error);
+    }
 }
 window._Emitter.off('jul:layerselect')
 window._Emitter.on('jul:layerselect', onReceiveListner)
@@ -158,132 +169,87 @@ async function onButtonClick(e) {
     }
 }
 //app.activeDocument.activeLayers[0].id
-async function isApplied(id) {
-    return new Promise(async (resolve) => {
-        await ps_CoreModal(async (executionContext) => {
-            let cartoon_suspensionID = await executionContext.hostControl.suspendHistory({
-                "documentID": app.activeDocument.id,
-                "name": "RAW Filter and Oil Painting"
-            })
-            const result = await ps_Bp([{
-                _obj: "get",
-                _target: [
-                    {
-                        _property: "smartObject"
-                    },
-                    {
-                        _ref: "layer",
-                        _id: id
-                    }
-                ]
-            }], {}).catch(e => resolve(false));
-            const so = result[0].smartObject;
-            if (so) {
-                resolve([so.filterFX.length > 0, so.filterFX]);
-            } else {
-                resolve([false, null]);
-            }
-            await executionContext.hostControl.resumeHistory(cartoon_suspensionID);
 
-        }, { commandName: "some tag" }).catch(e => resolve([false, null]));
-    })
-}
 function sliderChange(e) {
+
     const sl_index = sliders.findIndex(ex => ex.name == e.target.dataset.name);
     sliders[sl_index].value = e.target.value;
     doRawFilterandShit();
 }
+
+const rawfiltercommand = () => {
+    return {
+        "_obj": "Adobe Camera Raw Filter",
+        "$CrVe": "15.1.1",
+        "$PrVN": 5,
+        "$PrVe": 184549376,
+        "$CrTx": sliders[0].value,//texture
+        "$Cl12": sliders[1].value,//clarity
+        "sharpen": sliders[2].value,//sharpen
+        "$ShpR": 1,
+        "$ShpD": 25,
+        "$ShpM": 0,
+        "$LNR": sliders[3].value,//noisered
+        "$LNRD": 50,
+        "$LNRC": 0,
+        "$CNR": sliders[4].value,//colornoise
+        "$CNRD": 50,
+        "$CNRS": 50,
+        "$GRNA": sliders[6].value,//colornoise
+        "$GRNS": 25,
+        "$GRNF": 50,
+        "$PCVA": sliders[5].value,//colornoise
+        "$PCVM": 50,
+        "$PCVF": 50,
+        "RGBSetupClass": 0
+    }
+}
+
+const oilPaintCommand = () => {
+    return {
+        "_obj": "oilPaint",
+        "lightingOn": false,
+        "stylization": sliders[7].value,//style
+        "cleanliness": sliders[8].value,//clean
+        "brushScale": sliders[9].value,//brush
+        "microBrush": sliders[10].value,//microbrush
+    }
+}
 async function doRawFilterandShit() {
-    await ps_CoreModal(async () => {
-        const applied = (await isApplied(app.activeDocument.activeLayers[0].id))[0];
+    let command = []
+    try {
+        const applied = await isApplied(app.activeDocument.activeLayers[0].id);
 
-        if (applied) {
-            await ps_Bp([{
-                "_obj": "set",
-                "_target": [
-                    {
-                        "_ref": "filterFX",
-                        "_index": 1
-                    },
-                    {
-                        "_ref": "layer",
-                        "_enum": "ordinal",
-                        "_value": "targetEnum"
-                    }
-                ],
-                "filterFX": {
-                    "_obj": "filterFX",
-                    "filter": {
-                        "_obj": "Adobe Camera Raw Filter",
-                        "$CrVe": "15.1.1",
-                        "$PrVN": 5,
-                        "$PrVe": 184549376,
-                        "$CrTx": sliders[0].value,//texture
-                        "$Cl12": sliders[1].value,//clarity
-                        "sharpen": sliders[2].value,//sharpen
-                        "$LNR": sliders[3].value,//noise red
-                        "$CNR": sliders[4].value,//colornoise
+        if (applied[0] == true) {
+            //"oilPaint" "Adobe Camera Raw Filter"
+            const rawfilt = applied[1].filter(e => e.filter._obj == "Adobe Camera Raw Filter");
+            let raw_idx, oil_idx;
+            if (rawfilt.length > 0) {
+                for (const [i, v] of applied[1].entries()) {
+                    if (v.filter._obj === "Adobe Camera Raw Filter") {
+                        raw_idx = i + 1;
+                    } else if (v.filter._obj === "oilPaint") {
+                        oil_idx = i + 1;
                     }
                 }
-            }, {
-                "_obj": "set",
-                "_target": [
-                    {
-                        "_ref": "filterFX",
-                        "_index": 2
-                    },
-                    {
-                        "_ref": "layer",
-                        "_enum": "ordinal",
-                        "_value": "targetEnum"
-                    }
-                ],
-                "filterFX": {
-                    "_obj": "filterFX",
-                    "filter": {
-                        "_obj": "oilPaint",
-                        "lightingOn": false,
-                        "stylization": sliders[5].value,//style
-                        "cleanliness": sliders[6].value,//clean
-                        "brushScale": sliders[7].value,//brush
-                        "microBrush": sliders[8].value,//microbrush
-                    }
-                }
-            }], {});
+                command.push(setFilter(raw_idx, rawfiltercommand()));
+                command.push(setFilter(oil_idx, oilPaintCommand()));
+            } else {
+                command.push(rawfiltercommand());
+                command.push(oilPaintCommand());
+            }
 
-            return;
+        } else {
+            command.push(rawfiltercommand());
+            command.push(oilPaintCommand());
         }
-        await ps_Bp([{
-            "_obj": "newPlacedLayer"
-        }, {
-            "_obj": "Adobe Camera Raw Filter",
-            "$CrVe": "15.1.1",
-            "$PrVN": 5,
-            "$PrVe": 184549376,
-            "$CrTx": sliders[0].value,//texture
-            "$Cl12": sliders[1].value,//clarity
-            "sharpen": sliders[2].value,//sharpen
-            "$ShpR": 1,
-            "$ShpD": 25,
-            "$ShpM": 0,
-            "$LNR": sliders[3].value,//noisered
-            "$LNRD": 50,
-            "$LNRC": 0,
-            "$CNR": sliders[4].value,//colornoise
-            "$CNRD": 50,
-            "$CNRS": 50,
-            "$TMMs": 0,
-            "$PGTM": 0,
-            "RGBSetupClass": 0,
-            "_isCommand": true
-        }, {
-            "_obj": "oilPaint",
-            "lightingOn": false,
-            "stylization": sliders[5].value,//style
-            "cleanliness": sliders[6].value,//clean
-            "brushScale": sliders[7].value,//brush
-            "microBrush": sliders[8].value,//microbrush
-        }], {});
+    } catch (error) {
+        console.log(error)
+    }
+    await ps_CoreModal(async () => {
+
+        await ps_Bp(command, {});
+
     }, { commandName: "raw filter and shit" });
 }
 

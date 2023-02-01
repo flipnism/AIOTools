@@ -6,13 +6,11 @@ export const btnLists = [
     "color",
     "smart object",
     "textures",
-    "image search",
-    "batchplay"]
+    "image search"]
 export const btnMain = [
     "save", "newdoc", "collapse"
 ]
 export const ButtonList = ({ onButtonItemClick, onButtonItemMainClick }) => {
-    //const btnlist = ["save", "new doc", "collapse", "do", "something", "else"]
     const [btnState, setBtnState] = useState(false)
     const [isHover, setIsHover] = useState(false);
 
