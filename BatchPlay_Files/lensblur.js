@@ -37,7 +37,7 @@ function checkedHistory(){
    const his = app.activeDocument.historyStates;
    if(his[his.length-1].name==LB_HIST_NAME)
        {
-           console.log("yes");
+          
            app.activeDocument.activeHistoryState = his[his.length-2];}
 }
 
@@ -61,7 +61,7 @@ async function runTasks(target) {
    try {
        await require("photoshop").core.executeAsModal(target, { "commandName": "dosomestuff", "interactive": true });
    } catch (err) {
-       console.log(err);
+      
    }
 
 
@@ -134,7 +134,7 @@ async function buildUi(){
          try {
             await LensBlurMe(sl_radius.value,sl_grain.value);
          } catch (err) {
-            console.log(err);
+           
          }
       })
    })

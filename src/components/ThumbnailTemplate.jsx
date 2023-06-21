@@ -23,7 +23,8 @@ export class ThumbnailTemplate extends React.Component {
                         return e.isFile;
                     });
                     this.setState({ template_files: files })
-                    if (this.state.selectedindex)
+
+                    if (this.state.selectedindex > -1)
                         this.getTokenEntry(TOKEN.TEMPLATE, this.state.template_files[parseInt(this.state.selectedindex)].name);
 
                 });
@@ -48,12 +49,12 @@ export class ThumbnailTemplate extends React.Component {
             })
     }
     handleSelection(item) {
-
+        logme(this.state.entry);
         localStorage.setItem("TEMPLATE INDEX", parseInt(item.target.selectedIndex))
         this.setState({ selectedindex: item.target.selectedIndex });
         this.getTokenEntry(TOKEN.TEMPLATE, this.state.template_files[parseInt(item.target.selectedIndex)].name);
 
-        logme(this.state.entry);
+
 
 
 

@@ -1,33 +1,33 @@
-async function createBoxInang(){
+async function createBoxInang() {
 
     const layer = await app.activeDocument.activeLayers[0];
-    console.log(layer)
-    const range = 10;
+   
+    const range = 20;
     const b = layer.boundsNoEffects;
-    
-    result = await BP([{
+
+    await ps_Bp([{
         "_obj": "set",
         "_target": [
-           {
-              "_ref": "property",
-              "_property": "textStyle"
-           },
-           {
-              "_ref": "textLayer",
-              "_enum": "ordinal",
-              "_value": "targetEnum"
-           }
+            {
+                "_ref": "property",
+                "_property": "textStyle"
+            },
+            {
+                "_ref": "textLayer",
+                "_enum": "ordinal",
+                "_value": "targetEnum"
+            }
         ],
         "to": {
-           "_obj": "textStyle",
-           "color": {
-              "_obj": "RGBColor",
-              "red": 0,
-              "grain": 0,
-              "blue": 0
-           }
+            "_obj": "textStyle",
+            "color": {
+                "_obj": "RGBColor",
+                "red": 0,
+                "grain": 0,
+                "blue": 0
+            }
         }
-     },{
+    }, {
         "_obj": "make",
         "_target": [{
             "_ref": "contentLayer"
@@ -48,11 +48,11 @@ async function createBoxInang(){
                 "unitValueQuadVersion": 1,
                 "top": {
                     "_unit": "pixelsUnit",
-                    "_value": b.top-range
+                    "_value": b.top - range
                 },
                 "left": {
                     "_unit": "pixelsUnit",
-                    "_value": b.left-(range+10)
+                    "_value": b.left - (range + 10)
                 },
                 "bottom": {
                     "_unit": "pixelsUnit",
@@ -77,31 +77,32 @@ async function createBoxInang(){
             "name": "inangRect"
         }
 
-    }],{});
+    }], {});
     const newlayer = await app.activeDocument.activeLayers[0];
     newlayer.moveBelow(layer)
-    await BP([{
+   
+    await ps_Bp([{
         "_obj": "select",
         "_target": [
-           {
-              "_ref": "layer",
-              "_id": layer._id
-           }
+            {
+                "_ref": "layer",
+                "_id": layer._id
+            }
         ],
         "selectionModifier": {
-           "_enum": "selectionModifierType",
-           "_value": "addToSelection"
+            "_enum": "selectionModifierType",
+            "_value": "addToSelection"
         }
-     },{
+    }, {
         "_obj": "linkSelectedLayers",
         "_target": [
-           {
-              "_ref": "layer",
-              "_enum": "ordinal",
-              "_value": "targetEnum"
-           }
+            {
+                "_ref": "layer",
+                "_enum": "ordinal",
+                "_value": "targetEnum"
+            }
         ]
-     }],{});
+    }], {});
 }
 
 try {

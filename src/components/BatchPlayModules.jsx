@@ -44,6 +44,7 @@ const BatchPlayModules = (props) => {
     }
 
     async function assignFav() {
+        console.log("assign fave");
 
 
         const coremodule = await tokenentry.getEntry(".coremodule.js");
@@ -55,7 +56,7 @@ const BatchPlayModules = (props) => {
             favfread += await getscriptfile.read();
         }
         await executeBPFile(interpreter, coremodule_str + favfread)
-
+        console.log("assign fave");
 
 
 
@@ -67,30 +68,40 @@ const BatchPlayModules = (props) => {
 
         doLoad(true);
         onBPButtonClicked();
-        if (tokenentry) {
-            new Promise(async (resolve) => {
-                const coremodule = await tokenentry.getEntry(".coremodule.js");
-                const coremodule_str = await coremodule.read();
-                const getscriptfile = await tokenentry.getEntry(f.name);
-                const readfile = await getscriptfile.read();
-                await executeBPFile(interpreter, fav.length > 0 ? readfile : coremodule_str + readfile).then(() => { resolve("done") })
-
-            }).then(() => {
-                doLoad(false);
-            })
+        try {
 
 
+            if (tokenentry) {
+                new Promise(async (resolve) => {
+                    const coremodule = await tokenentry.getEntry(".coremodule.js");
+                    const coremodule_str = await coremodule.read();
+                    const getscriptfile = await tokenentry.getEntry(f.name);
+                    const readfile = await getscriptfile.read();
 
+                    await executeBPFile(interpreter, fav.length > 0 ? readfile : coremodule_str + readfile).then(() => { resolve("done") })
+
+                }).then(() => {
+                    doLoad(false);
+                })
+
+
+
+            }
+        } catch (error) {
+            console.error(error);
         }
 
     }
+
+
+
     useEffect(() => {
         if (tokenentry != null && fav != null) {
             logme("doit");
             try {
                 assignFav().catch((e) => logme(e));
             } catch (error) {
-                logme(error);
+                logme("eee", error);
             }
         }
 

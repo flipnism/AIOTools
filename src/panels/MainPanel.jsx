@@ -32,6 +32,7 @@ import { ContextMenu, MENU, SECONDMENU } from "../components/ContextMenu";
 import { appendTexturesFile, createRedbox, normalizeEmblem } from "../utils/layer";
 import { MCB } from "../components/MCB";
 import { ButtonList, btnLists } from "../components/ButtonList";
+import { LogPanel } from "./LogPanel";
 
 const SpMenu = wrapWc("sp-menu");
 const events = [{ event: "make" }, { event: "select" }];
@@ -109,13 +110,19 @@ export const MainPanel = () => {
     getWebSocket,
     lastJsonMessage,
   } = useWebSocket(socketUrl, {
-    onOpen: () => logme("socket opened"),
+    onOpen: () => {
+
+      logme("socket opened")
+
+
+
+    },
     shouldReconnect: (closeEvent) => true,
   });
 
   const token = new Token();
   const [dialogState, setDialogState] = useState(initValue);
-  const [template, setTemplate] = useState(null);
+  const [template, setTemplate] = useState();
   const [showLoading, setShowLoading] = useState(true);
   const [activeAccordion, setActiveAccordion] = useState(-1);
   const [tagLayers, setTagLayers] = useState([]);
@@ -131,7 +138,7 @@ export const MainPanel = () => {
   };
   window.updateLoading = updateLoading;
   window.sockSendMessage = sendJsonMessage;
-  window.localSocket = getWebSocket;
+
   window.roottoken = token;
 
   function appendTagLayer() {
@@ -259,6 +266,7 @@ export const MainPanel = () => {
       }
     }
 
+
     const savepathtoken = await token.getToken(channel);
     if (app.activeDocument.title.includes("Untitled")) {
       let num = 0;
@@ -277,7 +285,7 @@ export const MainPanel = () => {
         channel: channel,
         fromserver: false,
         data: message,
-        textdata: channel
+        textdata: vidId
       })
     } else if (app.activeDocument.title.includes(".psd")) {
       const message = await doSaveDocument(
@@ -290,7 +298,7 @@ export const MainPanel = () => {
         channel: channel,
         fromserver: false,
         data: message,
-        textdata: channel
+        textdata: vidId
       })
     }
   }
@@ -303,7 +311,51 @@ export const MainPanel = () => {
 
   }
 
+  async function HOTKEYAPI(data) {
+    switch (data) {
+      case "backward":
+        setShowMenu(false);
+        cmRef.current.doHide();
+        let pos = activeAccordion - 1;
+        if (pos < 0) {
+          pos = accordiondata.length - 1
+        }
+        setActiveAccordion(pos);
+        break;
+      case "forward":
+        setShowMenu(false);
+        cmRef.current.doHide();
+        let pos_f = activeAccordion + 1;
+        if (pos_f > accordiondata.length - 1) {
+          pos_f = 0
+        }
+        setActiveAccordion(pos_f);
+        break;
+      case "save":
+        await Save();
+        break;
+      case "newdoc":
+        await createNewDoc()
+        break;
+      case "whatsapp":
+        break;
+      case "switchmenu":
+        if (showMenu) {
+          setShowMenu(false);
+          cmRef.current.doHide();
+          setActiveAccordion(activeAccordion);
+        } else {
+          setShowMenu(true);
+          cmRef.current.doClick();
+        }
 
+        break;
+      default: break;
+    }
+
+
+
+  }
 
 
   useEffect(() => {
@@ -321,6 +373,13 @@ export const MainPanel = () => {
             logme("upscale", namafile);
             appendGigalPixelImages(namafile)
             break;
+          case "hotkey":
+            try {
+              HOTKEYAPI(lastJsonMessage.data);
+            } catch (error) {
+              console.error(error)
+            }
+            break;
 
         }
 
@@ -333,6 +392,7 @@ export const MainPanel = () => {
   async function handleButtonClick(i, alltext) {
     switch (i) {
       case "create":
+
         setShowLoading(true);
         await delay(300);
         await insertTemplate(template);
@@ -435,12 +495,17 @@ export const MainPanel = () => {
     }
   }
   const [logtext, setLogtext] = useState("");
+  const [vidId, setVidId] = useState("");
   const accordiondata = [
     {
 
       title: "Text Tools",
       content: (
         <>
+          {/* video id */}
+          <sp-textfield size="s" class="videoid" onInput={(v) => {
+            setVidId(v.target.value);
+          }}></sp-textfield>
           <ThumbnailTemplate
             token={token}
             askForToken={() =>
@@ -537,9 +602,14 @@ export const MainPanel = () => {
 
       title: "Online Images",
       content: <OnlineImages token={token} />,
+    },
+    {
+
+      title: "Whatsapp",
+      content: <LogPanel />,
     }
   ];
-
+  window.showmenu = setShowMenu;
 
   const [menuPanelVisibility, setMenuPanelVisibility] = useState();
   return (
@@ -618,9 +688,10 @@ export const MainPanel = () => {
                             activeAccordion == index ? "#fd0" : "#444",
                         }}
                         onClick={() => {
-                          if (activeAccordion == index)
-                            setActiveAccordion(-1);
-                          else setActiveAccordion(index);
+                          // if (activeAccordion == index)
+                          //   setActiveAccordion(-1);
+                          // else 
+                          setActiveAccordion(index);
                         }}
                       >
                         {data.title}

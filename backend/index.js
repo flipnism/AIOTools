@@ -35,9 +35,9 @@ app.get("/readlink", (req, res) => {
         if (err) return;
         const newarr = []
         for (const file of files) {
-            console.log(path.join(rootdir, file));
+           
             fs.readlink(path.join(rootdir, file), (err, link) => {
-                console.log(err)
+               
                 newarr.push({ key: file, link: link })
             })
         }
@@ -85,7 +85,7 @@ app.post("/link", (req, res) => {
     });
 });
 app.listen(PORT, () => {
-    console.log(`visit http://localhost:${PORT}`);
+   
 });
 
 // in app.js (or similar)

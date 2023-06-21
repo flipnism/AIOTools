@@ -18,7 +18,7 @@
             _target: target
         }], {});
         const __id = result[result.length - 1].layerID;
-        console.log(__id);
+       
         await ps_Bp([{
             "_obj": "set",
             "_target": [

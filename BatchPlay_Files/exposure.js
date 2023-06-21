@@ -185,13 +185,14 @@ exposureEL.attachGroup(expROOT);
 function doUrMagic() {
 
     let cmd = _EXPOSURE(expSlider);
-    log(cmd);
+
 
 
 
     isApplied(lyrID()).then(async (lEffct) => {
 
         await ps_CoreModal(async () => {
+
             if (lEffct[0] != true) {
                 await ps_Bp([cmd], {});
                 return;
@@ -200,10 +201,12 @@ function doUrMagic() {
                 if (v.filter._obj == "Exposure X7 Alien_Skin") {
 
 
-                    await ps_Bp([lEffct[0] ? setFilter(i + 1, cmd) : cmd], {});
+                    await ps_Bp([setFilter(i + 1, cmd)], {});
+                    return;
                 }
 
             }
+            await ps_Bp([cmd], {});
 
 
         }, { commandName: "some tag" }).catch(e => log(e));

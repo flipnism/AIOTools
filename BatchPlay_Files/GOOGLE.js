@@ -38,11 +38,12 @@ async function btnKlikListener(e) {
 
     NavigatePage(e.target.textContent);
     if (e.target.textContent == "DOWNLOAD") {
-        console.log("YES");
-        await _delay(1000)
-        console.log("LOADING");
-
         updateLoading(true);
+        await _delay(1000)
+
+
+
+        updateLoading(false);
     }
 }
 
@@ -88,7 +89,7 @@ function appendButtons(count) {
 document.addEventListener("SOCKETMESSAGE", (ev) => {
 
     const result = ev.detail;
-    console.log(result.fromserver, result.type);
+
     if (result.fromserver) {
         switch (result.type) {
             case "imagecount":
@@ -97,6 +98,10 @@ document.addEventListener("SOCKETMESSAGE", (ev) => {
                 break;
             case "upscaledfile":
                 updateLoading(false);
+                break;
+
+            case "hotkey":
+
                 break;
         }
 

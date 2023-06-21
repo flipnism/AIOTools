@@ -110,6 +110,7 @@ class EL {
             if (type) {
                 _d.setAttribute("type", type);
             }
+            _d.setAttribute("value", text);
         } else if (el == C.picker) {
 
             const opt = document.createElement("sp-menu");
@@ -156,6 +157,9 @@ class EL {
         });
     }
 
+
+
+
     getSelectedLayers() {
         return app.activeDocument.activeLayers;
     }
@@ -168,7 +172,17 @@ function makeElement(el, _classname) {
     _div.className = _classname;
     return _div;
 }
-
+function makeEL(el, st, text) {
+    const _div = document.createElement(el);
+    if (st) {
+        _div.setAttribute("style", __style(st));
+    }
+    if (text) {
+        _div.textContent = text
+    }
+    return _div;
+}
+window.makeEL = makeEL;
 
 class JulBox {
     constructor(text) {
@@ -373,6 +387,123 @@ const setFilter = (index, _filter) => {
 const activelayerID = () => {
     return app.activeDocument.activeLayers[0].id;
 }
+
+function GetLayers(whichkind) {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+
+            const result = await bpSync(
+                [
+                    {
+                        _obj: "multiGet",
+                        _target: { _ref: [{ _ref: "document", _enum: "ordinal" }] },
+                        extendedReference: [
+                            ["name", "layerID", "layerKind"],
+                            { _obj: "layer", index: 1, count: -1 }],
+
+                    },
+                ], "Hello"
+            );
+            //text 3
+            resolve(result[0].list.filter(f => f.layerKind == whichkind));
+        } catch (error) {
+            reject(error);
+        }
+    })
+
+
+
+
+}
+async function selectLayerByID(_id) {
+    return new Promise(async (res, rej) => {
+        try {
+            await bpSync([{
+                "_obj": "select",
+                "_target": [
+                    {
+                        "_ref": "layer",
+                        "_id": _id
+                    }
+                ],
+                "selectionModifier": {
+                    "_enum": "selectionModifierType",
+                    "_value": "addToSelection"
+                }
+            }], 'TAG');
+            res("");
+        } catch (error) {
+            console.error(error)
+        }
+
+
+    })
+
+}
+async function SelectTexts() {
+
+
+    const doc = app.activeDocument;
+
+    if (doc.activeLayers[0] == undefined) {
+
+        const l = await GetLayers(3);
+        const ids = l.map(x => x.layerID)
+        for (const id of ids) {
+            await selectLayerByID(id);
+        }
+        return;
+
+
+    }
+    if (doc.activeLayers.length > 0) {
+        try {
+            if (doc.activeLayers[0].kind !== "text") {
+
+                await bpSync([{
+                    "_obj": "selectNoLayers",
+                    "_target": [
+                        {
+                            "_ref": "layer",
+                            "_enum": "ordinal",
+                            "_value": "targetEnum"
+                        }
+                    ]
+                }], 'SELECT');
+                const lS = await GetLayers(3);
+
+                const idSs = lS.map(x => x.layerID)
+                for (const idS of idSs) {
+                    await selectLayerByID(idS);
+                    console.log("hELLO");
+                }
+
+
+            }
+
+
+        } catch (error) {
+            console.error(error)
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+window.SelectTexts = SelectTexts;
+window.GetLayers = GetLayers;
 window.lyrID = activelayerID;
 
 window.setFilter = setFilter;

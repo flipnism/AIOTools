@@ -1,0 +1,2 @@
+
+applyAdjustmentLayer(ADJLAYER.COLORBALANCE)

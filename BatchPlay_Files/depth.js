@@ -129,6 +129,7 @@
         updateLoading(true);
         init();
     } catch (error) {
+        console.log(error)
         logUi(error);
     }
 
@@ -187,3 +188,4 @@ async function init() {
     })
 
 }
+

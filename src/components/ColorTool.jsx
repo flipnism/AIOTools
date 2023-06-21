@@ -283,6 +283,7 @@ export default class ColorTool extends Component {
                     <div className="group-horizontal fetch">
                         <div onClick={() => {
                             findLayer("colorfill").then((result) => {
+                                logme(result);
                                 this.setState({ cflayer: result })
 
 

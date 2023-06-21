@@ -24,7 +24,7 @@ export const TextTool = forwardRef(({ sendJsonMessage, BindOnClick }, ref) => {
     useEffect(() => {
         const pattern = /\`([\s\S]*)\`/;
         let _tempText = textareaValue;
-        console.log(pattern.test(_tempText))
+       
         if (pattern.test(_tempText)) {
             const tag_group = _tempText.match(pattern);
             logme(tag_group, tag_group[1], tag_group.length);

@@ -56,25 +56,23 @@
       },
       "icons": [
         {
-          "width": 32,
-          "height": 32,
-          "path": "icons/icon_D.png",
+          "width": 23,
+          "height": 23,
+          "path": "icons/dark.png",
           "scale": [
             1,
             2
           ],
           "theme": [
+            "darkest",
             "dark",
-            "darkest"
-          ],
-          "species": [
-            "generic"
+            "medium"
           ]
         },
         {
-          "width": 32,
-          "height": 32,
-          "path": "icons/icon_N.png",
+          "width": 23,
+          "height": 23,
+          "path": "icons/light.png",
           "scale": [
             1,
             2
@@ -82,66 +80,6 @@
           "theme": [
             "lightest",
             "light"
-          ],
-          "species": [
-            "generic"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "panel",
-      "id": "logpanel",
-      "label": {
-        "default": "Log"
-      },
-      "minimumSize": {
-        "width": 350,
-        "height": 590
-      },
-      "maximumSize": {
-        "width": 350,
-        "height": 590
-      },
-      "preferredDockedSize": {
-        "width": 350,
-        "height": 300
-      },
-      "preferredFloatingSize": {
-        "width": 350,
-        "height": 590
-      },
-      "icons": [
-        {
-          "width": 32,
-          "height": 32,
-          "path": "icons/icon_D.png",
-          "scale": [
-            1,
-            2
-          ],
-          "theme": [
-            "dark",
-            "darkest"
-          ],
-          "species": [
-            "generic"
-          ]
-        },
-        {
-          "width": 32,
-          "height": 32,
-          "path": "icons/icon_N.png",
-          "scale": [
-            1,
-            2
-          ],
-          "theme": [
-            "lightest",
-            "light"
-          ],
-          "species": [
-            "generic"
           ]
         }
       ]
@@ -149,35 +87,23 @@
   ],
   "icons": [
     {
-      "width": 32,
-      "height": 32,
-      "path": "icons/icon_D.png",
+      "width": 48,
+      "height": 48,
+      "path": "icons/plugin.png",
       "scale": [
         1,
         2
       ],
       "theme": [
+        "darkest",
         "dark",
-        "darkest"
-      ],
-      "species": [
-        "generic"
-      ]
-    },
-    {
-      "width": 32,
-      "height": 32,
-      "path": "icons/icon_N.png",
-      "scale": [
-        1,
-        2
-      ],
-      "theme": [
+        "medium",
         "lightest",
-        "light"
+        "light",
+        "all"
       ],
       "species": [
-        "generic"
+        "pluginList"
       ]
     }
   ]

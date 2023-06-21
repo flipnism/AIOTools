@@ -44,7 +44,7 @@ entrypoints.setup({
     commands: {},
     panels: {
         mainpanel: mainpanelController,
-        logpanel: logPanel
+        
     }
 })
 

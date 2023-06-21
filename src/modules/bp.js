@@ -322,6 +322,7 @@ export async function executeBPFile(interpreter, snippet) {
   }).catch((e) => logme(e));;
 
 }
+window.executeBP = executeBPFile;
 export async function saveDocument(filename, channel) {
   await PSCoreModal(async () => {
 
@@ -1016,6 +1017,7 @@ export async function doSaveDocument(savepathtoken, namafile, channel) {
           "_value": "saveBegin"
         }
       }], {}).catch(e => logme("PS", e));
+      logme(result[1]);
       resolve(result[1].in._path)
 
 

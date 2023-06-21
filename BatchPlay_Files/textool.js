@@ -198,6 +198,7 @@ const ALIGN = {
 
 }
 async function alignLayers(alignto, toCanvas) {
+    console.log("align layer");
     await ps_CoreModal(async () => {
         await ps_Bp([{
             "_obj": "align",
@@ -216,9 +217,16 @@ async function alignLayers(alignto, toCanvas) {
         }], {})
     })
 }
-
+const docWidth = 1280;
+const docHeight = 720;
 async function btnListener(e) {
+
+    await SelectTexts();
+
+    console.log("yea is done");
+
     const _all = app.activeDocument.activeLayers;
+
     const ver = _all.sort(function (a, b) { return a.boundsNoEffects.top - b.boundsNoEffects.top });
     const verbot = _all.sort(function (a, b) { return b.boundsNoEffects.bottom - a.boundsNoEffects.bottom });
     const _left = _all.sort(function (a, b) { return a.boundsNoEffects.left - b.boundsNoEffects.left });
@@ -235,9 +243,24 @@ async function btnListener(e) {
 
     const margin = parseInt(textGap.get());
     const leftGut = cbTag.state ? 104 : 0;
-    const val = e.target.textContent;
-    const docWidth = 1280;
-    const docHeight = 720;
+
+
+
+
+
+    var val;
+    try {
+        val = e.target.textContent;
+    } catch (error) {
+        val = e;
+
+    }
+
+    const x = ((docWidth / 2)) - (((width / 2) + left));
+    let y = 0;
+    if (cbMid.state) {
+        y = (docHeight / 2) - ((height / 2) + top)
+    }
 
     switch (val) {
 
@@ -277,11 +300,7 @@ async function btnListener(e) {
 
             break;
         case arr.mm:
-            const x = ((docWidth / 2)) - (((width / 2) + left));
-            let y = 0;
-            if (cbMid.state) {
-                y = (docHeight / 2) - ((height / 2) + top)
-            }
+
             await geser(x + (leftGut / 2), y);
 
             break;
@@ -314,4 +333,62 @@ async function btnListener(e) {
 
 }
 
+
+document.addEventListener("SOCKETMESSAGE", async (ev) => {
+
+    const result = ev.detail;
+
+
+    if (result.fromserver) {
+        switch (result.type) {
+            case "imagecount":
+                appendButtons(result.data);
+
+                break;
+            case "upscaledfile":
+                updateLoading(false);
+                break;
+            case "hotkey":
+                // tl: "🡼",
+                // tt: "🡹",
+                // tr: "🡽",
+                // ml: "🡸",
+                // mm: "🞒",
+                // mr: "🡺",
+                // bl: "🡿",
+                // bm: "🢃",
+                // br: "🢆"
+                console.log(result.data);
+                switch (result.data) {
+
+                    case "topleft": btnListener(arr.tl); break;
+                    case "toptop": btnListener(arr.tt); break;
+                    case "topright": btnListener(arr.tr); break;
+                    case "midleft": btnListener(arr.ml); break;
+                    case "midmid": btnListener(arr.mm); break;
+                    case "midright": btnListener(arr.mr); break;
+                    case "botleft": btnListener(arr.bl); break;
+                    case "botbot": btnListener(arr.bm); break;
+                    case "botright": btnListener(arr.br); break;
+                    case "LEFT": await alignLayers(ALIGN.LEFT, false); break;
+                    case "MID": await alignLayers(ALIGN.CENTERHORIZONTAL, false); break;
+                    case "RIGHT": await alignLayers(ALIGN.RIGHT, false); break;
+
+                    case "adj_curves": applyAdjustmentLayer(ADJLAYER.CURVES); break;
+                    case "adj_huesaturation": applyAdjustmentLayer(ADJLAYER.HUESATURATION); break;
+                    case "adj_exposure": applyAdjustmentLayer(ADJLAYER.EXPOSURE); break;
+                    case "adj_colorbalance": applyAdjustmentLayer(ADJLAYER.COLORBALANCE); break;
+                    case "adj_gradientmap": applyAdjustmentLayer(ADJLAYER.GRADIENTMAP); break;
+                    case "adj_lut": applyAdjustmentLayer(ADJLAYER.LUT); break;
+
+
+                }
+
+                break;
+        }
+
+    }
+
+
+})
 

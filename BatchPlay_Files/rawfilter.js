@@ -92,6 +92,7 @@ async function onReceiveListner(rr) {
     try {
         isApplied(rr.layerID[0]).then((result) => {
             sliders.forEach((sl) => {
+
                 document.querySelector(`.slider_${sl.id}`).setAttribute("value", 0);
             });
             if (!result[0]) return;
@@ -118,6 +119,7 @@ async function onReceiveListner(rr) {
             }
 
             sliders.forEach((sl) => {
+                console.log(sl.value);
                 document.querySelector(`.slider_${sl.id}`).setAttribute("value", sl.value);
             });
 
@@ -137,7 +139,10 @@ async function onButtonClick(e) {
             break;
         case "APPLY":
             sliders = CONF_LISTS[CONF_PICKER.selectedIndex].data;
+            log(CONF_LISTS);
+
             sliders.forEach((sl) => {
+                log(sl.value);
                 document.querySelector(`.slider_${sl.id}`).setAttribute("value", sl.value);
             });
             doRawFilterandShit();
@@ -150,8 +155,10 @@ async function onButtonClick(e) {
             }, { commandName: "Apply Smart Object" });
 
             sliders.forEach((sl) => {
+
                 document.querySelector(`.slider_${sl.id}`).setAttribute("value", 0);
             });
+
             break;
         case "SAVEPROFILE":
             let config = readConfig();
@@ -162,6 +169,7 @@ async function onButtonClick(e) {
             break;
         case "DELETEPROFILE":
             const _TEMP = CONF_LISTS.filter(item => item.name !== CONF_LISTS[CONF_PICKER.selectedIndex].name);
+
 
             nodefs.writeFileSync(CONF_FILE, JSON.stringify(_TEMP));
             onConfigSaved();
@@ -226,6 +234,7 @@ async function doRawFilterandShit() {
             let raw_idx, oil_idx;
             if (rawfilt.length > 0) {
                 for (const [i, v] of applied[1].entries()) {
+                    console.log(v.filter._obj);
                     if (v.filter._obj === "Adobe Camera Raw Filter") {
                         raw_idx = i + 1;
                     } else if (v.filter._obj === "oilPaint") {
@@ -244,11 +253,11 @@ async function doRawFilterandShit() {
             command.push(oilPaintCommand());
         }
     } catch (error) {
-        console.log(error)
+
     }
     await ps_CoreModal(async () => {
 
-        await ps_Bp(command, {});
+        await ps_Bp(command, {}).catch((e) => { console.log(e) });
 
     }, { commandName: "raw filter and shit" });
 }

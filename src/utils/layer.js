@@ -349,7 +349,8 @@ export async function applyAdjustmentLayer(whichlayer) {
 
 
 }
-
+window.applyAdjustmentLayer = applyAdjustmentLayer;
+window.ADJLAYER = ADJLAYER;
 
 export async function createRedbox() {
     const layer = app.activeDocument.activeLayers[0]
