@@ -138,7 +138,7 @@ export const MainPanel = () => {
   };
   window.updateLoading = updateLoading;
   window.sockSendMessage = sendJsonMessage;
-
+window.localSocket = getWebSocket;
   window.roottoken = token;
 
   function appendTagLayer() {
@@ -504,7 +504,15 @@ export const MainPanel = () => {
         <>
           {/* video id */}
           <sp-textfield size="s" class="videoid" onInput={(v) => {
-            setVidId(v.target.value);
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube.com\/video\/)([^"&?\/\s]{11})/gi;
+            let _id = v.target.value;
+            let m = regex.exec(_id);
+            if (m) {
+                _id = m[1]
+            }
+            console.log(_id);
+            v.target.value=_id
+            setVidId(_id);
           }}></sp-textfield>
           <ThumbnailTemplate
             token={token}
@@ -661,6 +669,7 @@ export const MainPanel = () => {
         ><BatchPlayModules
             doLoad={updateLoading}
             token={token}
+            listenToMessage = {lastJsonMessage}
             onBPButtonClicked={(e) => {
 
             }}

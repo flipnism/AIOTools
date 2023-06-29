@@ -3,7 +3,7 @@ import { TOKEN } from "../modules/Token";
 import { delay, executeBPFile, logme } from "../modules/bp";
 import Sval from "sval";
 const BatchPlayModules = (props) => {
-    const { onBPButtonClicked, askForToken, token, sidebarshow, doLoad, ...rest } = props;
+    const { onBPButtonClicked, askForToken, token, sidebarshow, doLoad,listenToMessage, ...rest } = props;
     const elRef = useRef(null);
 
     const interpreter = new Sval({
@@ -13,6 +13,22 @@ const BatchPlayModules = (props) => {
     const [bpfile, setBpfile] = useState({ files: [] });
     const [fav, setFav] = useState(localStorage.getItem("BPFAV"));
     const [tokenentry, setTokenentry] = useState(null);
+    useEffect(()=>{
+
+        if(listenToMessage!=null){
+            if(listenToMessage.fromserver && listenToMessage.type==="bp"){
+               
+                var _bp = bpfile.files.filter(f=>{return `${listenToMessage.data.toLowerCase()}.js`===f.name.toLowerCase()});
+              
+                if(_bp.length>0){
+                    
+                    onBPClick(_bp[0]);
+                }
+              
+            }
+        }
+    },[listenToMessage]);
+
     const handleEvent = (evt) => {
         const propName = `on${evt.type[0].toUpperCase()}${evt.type.substr(1)}`;
         if (rest[propName]) {
@@ -92,6 +108,7 @@ const BatchPlayModules = (props) => {
         }
 
     }
+
 
 
 

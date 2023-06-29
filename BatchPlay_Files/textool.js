@@ -220,8 +220,18 @@ async function alignLayers(alignto, toCanvas) {
 const docWidth = 1280;
 const docHeight = 720;
 async function btnListener(e) {
+    var val;
+    try {
+        val = e.target.textContent;
+    } catch (error) {
+        val = e;
 
+    }
+
+if(!val.includes("SCALE")){
     await SelectTexts();
+}
+    
 
     console.log("yea is done");
 
@@ -248,13 +258,6 @@ async function btnListener(e) {
 
 
 
-    var val;
-    try {
-        val = e.target.textContent;
-    } catch (error) {
-        val = e;
-
-    }
 
     const x = ((docWidth / 2)) - (((width / 2) + left));
     let y = 0;
@@ -348,6 +351,129 @@ document.addEventListener("SOCKETMESSAGE", async (ev) => {
             case "upscaledfile":
                 updateLoading(false);
                 break;
+            case "depthmask":
+                const response = result;
+                const resultmi = await roottoken.getToken("midasresult");
+                const entry = await resultmi.getEntry(`${response.data}.png`);
+          
+                const _entry = await ps_Fs.createSessionToken(entry);
+                await _delay(100);
+               
+                let maskid;
+                await ps_CoreModal(async () => {
+                    const resultp = await ps_Bp([{
+                        "_obj": "placeEvent",
+                        "null": {
+                            _path: _entry,
+                            _kind: "local",
+                        },
+                        "linked": true
+                    }, {
+                        "_obj": "rasterizeLayer",
+                        "_target": [
+                            {
+                                "_ref": "layer",
+                                "_enum": "ordinal",
+                                "_value": "targetEnum"
+                            }
+                        ]
+                    }], {})
+                    maskid = resultp[0].ID;
+                }, { commandName: "hello" });
+                await require("photoshop").core.performMenuCommand({ commandID: 1801 })
+
+                openYesNoDialog("Depth Map",
+                    `Are u sure?
+            make sure to make the darkside darker
+            and the light side lighter...
+            dork!!!!`,
+                    { yes: "Yes Lets Go", no: "Nope" }, async (res) => {
+                        if (res) {
+                            try {
+                                await ps_CoreModal(async () => {
+                                    await ps_Bp([{
+                                        "_obj": "set",
+                                        "_target": [
+                                            {
+                                                "_ref": "channel",
+                                                "_property": "selection"
+                                            }
+                                        ],
+                                        "to": {
+                                            "_obj": "rectangle",
+                                            "top": {
+                                                "_unit": "pixelsUnit",
+                                                "_value": 0
+                                            },
+                                            "left": {
+                                                "_unit": "pixelsUnit",
+                                                "_value": 0
+                                            },
+                                            "bottom": {
+                                                "_unit": "pixelsUnit",
+                                                "_value": 720
+                                            },
+                                            "right": {
+                                                "_unit": "pixelsUnit",
+                                                "_value": 1280
+                                            }
+                                        }
+                                    }, {
+                                        "_obj": "copyEvent",
+                                        "copyHint": "pixels"
+                                    }, {
+                                        "_obj": "make",
+                                        "new": {
+                                            "_obj": "channel",
+                                            "colorIndicates": {
+                                                "_enum": "maskIndicator",
+                                                "_value": "maskedAreas"
+                                            }
+                                        }
+                                    }, {
+                                        "_obj": "paste",
+                                        "antiAlias": {
+                                            "_enum": "antiAliasType",
+                                            "_value": "antiAliasNone"
+                                        },
+                                        "as": {
+                                            "_class": "pixel"
+                                        }
+                                    }, {
+                                        "_obj": "select",
+                                        "_target": [
+                                            {
+                                                "_ref": "channel",
+                                                "_enum": "channel",
+                                                "_value": "RGB"
+                                            }
+                                        ]
+                                    }, {
+                                        "_obj": "delete",
+                                        "_target": [
+                                            {
+                                                "_ref": "layer",
+                                                "_id": parseInt(maskid)
+                                            }
+                                        ]
+                                    }], {})
+                                }, { commandName: "hello" });
+                                await require("photoshop").core.performMenuCommand({ commandID: 1017 })
+                                await require("photoshop").core.performMenuCommand({ commandID: 2970 })
+                 
+                                await require("photoshop").core.performMenuCommand({ commandID: -402 })
+
+
+                            } catch (error) {
+                                console.error(error);
+                            }
+
+                        }
+                    });
+                updateLoading(false);
+            
+            
+                break;
             case "hotkey":
                 // tl: "🡼",
                 // tt: "🡹",
@@ -380,6 +506,9 @@ document.addEventListener("SOCKETMESSAGE", async (ev) => {
                     case "adj_colorbalance": applyAdjustmentLayer(ADJLAYER.COLORBALANCE); break;
                     case "adj_gradientmap": applyAdjustmentLayer(ADJLAYER.GRADIENTMAP); break;
                     case "adj_lut": applyAdjustmentLayer(ADJLAYER.LUT); break;
+                    case "deleteandfill":
+                        await require("photoshop").core.performMenuCommand({ commandID: 5280 })                   
+                    break;
 
 
                 }
